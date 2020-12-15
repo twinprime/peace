@@ -1,13 +1,13 @@
 import * as Phaser from 'phaser'
-import BirdGameObject from './BirdGameObject'
+import ChopperGameObject from './ChopperGameObject'
 import GroundGameObject from './GroundGameObject'
 import TreeGameObject from './TreeGameObject'
 
 export default class GameScene extends Phaser.Scene {
-  private score = 0
+  private frameTime = 0
   private _platformBodies: Phaser.Physics.Arcade.StaticGroup
   private _treeBodies: Phaser.Physics.Arcade.Group
-  private bird: BirdGameObject
+  private chopper: ChopperGameObject
   private ground: GroundGameObject
   private treeObjects: TreeGameObject[] = []
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys
@@ -21,28 +21,31 @@ export default class GameScene extends Phaser.Scene {
     return this._treeBodies
   }
   
-  constructor() {
+  constructor(readonly worldWidth: number, readonly worldHeight: number) {
     super({
       active: false,
       visible: false,
       key: 'Game',
     })
-    this.bird = new BirdGameObject(this)
+    this.chopper = new ChopperGameObject(this)
     this.ground = new GroundGameObject(this)
   }
 
   init(): void {
-    this.score = 0
+    this.physics.world.setFPS(60)
   }
 
   preload(): void {
     this.load.image('sky', '/images/sky.png')
     this.load.spritesheet('nature', '/images/nature.png', { frameWidth: 16, frameHeight: 16 })
-    this.bird.preload()
+    this.chopper.preload()
   }
   
   create(): void {
-    this.add.image(400, 300, 'sky')
+    this.physics.world.setBounds(0, 0, this.worldWidth, this.worldHeight)
+
+    const bg = this.add.image(this.worldWidth / 2, this.worldHeight / 2, 'sky')
+    bg.setDisplaySize(this.worldWidth, this.worldHeight)
 
     this._platformBodies = this.physics.add.staticGroup()
     this.ground.create()
@@ -53,16 +56,21 @@ export default class GameScene extends Phaser.Scene {
     tree.create(this._treeBodies, 100, groundPos, 3)
     this.treeObjects.push(tree)
 
-    this.scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' })
-
     this.cursors = this.input.keyboard.createCursorKeys()
 
-    this.bird.create()
+    this.chopper.create(100, 100)
+
+    this.cameras.main.setBounds(0, 0, this.worldWidth, this.worldHeight)
+    this.cameras.main.startFollow(this.chopper.sprite)
   }
   
-  update(): void {
-    this.bird.update(this.cursors)
-    this.treeObjects.forEach(tree => tree.update())
+  update(time: number, delta: number): void {
+    this.frameTime += delta
+    if (this.frameTime >= 16.5) {
+      this.frameTime = 0
+      this.chopper.update(this.cursors)
+      this.treeObjects.forEach(tree => tree.update())
+    }
   }
 
   end(): void {
