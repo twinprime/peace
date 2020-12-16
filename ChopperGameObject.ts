@@ -1,5 +1,6 @@
 import GameObject from "./GameObject"
 import GameScene from "./GameScene"
+import HealthBarGameObject from "./HealthBarGameObject"
 
 export default class ChopperGameObject extends GameObject {
   private body: Phaser.Physics.Arcade.Body
@@ -10,6 +11,8 @@ export default class ChopperGameObject extends GameObject {
   private maxSpeed = 600
   private acceleration = 600
   private drag = 300
+  private health = 100
+  private healthCallback?: ((health: number) => void)
 
   get sprite(): Phaser.GameObjects.Sprite {
     return this.bodySprite
@@ -19,24 +22,27 @@ export default class ChopperGameObject extends GameObject {
     super(scene)
   }
 
-  preload(): void {
-    this.scene.load.spritesheet("chopper", "/images/chopper.png", { frameWidth: 32, frameHeight: 32 })
-  }
-
-  create(x: number, y: number): void {
+  create(x: number, y: number, healthCallback?: ((health: number) => void)): void {
     this.spriteGp = this.scene.add.group()
     
     this.bodySprite = this.spriteGp.create(x, y, "chopper", 0) as Phaser.GameObjects.Sprite
     this.scene.physics.add.existing(this.bodySprite)
     this.body = this.bodySprite.body as Phaser.Physics.Arcade.Body
     this.body.setCollideWorldBounds(true)
-    // this.body.worldBounce = new Phaser.Math.Vector2(0.5, 0.5)
     this.body.setAllowGravity(false)
     this.scene.physics.add.collider(this.bodySprite, this.scene.platforms)
-    this.scene.physics.add.collider(this.bodySprite, this.scene.trees)
     
     this.tailSprite = this.spriteGp.create(x - 32, y, "chopper", 1) as Phaser.GameObjects.Sprite
     this.tailSprite.setVisible(false)
+
+    this.healthCallback = healthCallback
+
+    this.scene.physics.add.overlap(this.bodySprite, this.scene.bullets, (me, bullet) => {
+      this.scene.removeBullet(bullet)
+      this.health -= 10
+      if (this.health < 0) this.health = 0
+      this.healthCallback?.(this.health)
+    })
   }
 
   update(cursors: Phaser.Types.Input.Keyboard.CursorKeys): void {

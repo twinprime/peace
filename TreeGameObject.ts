@@ -19,7 +19,7 @@ export default class TreeGameObject extends GameObject {
     this.body = bodyRect.body as Phaser.Physics.Arcade.Body
     this.body.allowGravity = false
     this.body.immovable = true
-    this.body.setVelocityX(5)
+    // this.body.setVelocityX(5)
 
     const bottom = this.scene.add.sprite(x, vPos, "nature", 37)
     bottom.setScale(2)

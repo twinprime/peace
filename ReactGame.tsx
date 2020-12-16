@@ -10,7 +10,7 @@ export class ReactGame extends React.Component {
   }
 
   componentDidMount(): void {
-    const game = new Phaser.Game({
+    new Phaser.Game({
       title: 'Sample',
       type: Phaser.AUTO,
       
@@ -24,7 +24,7 @@ export class ReactGame extends React.Component {
         default: 'arcade',
         arcade: {
           gravity: { y: 300 },
-          debug: true,
+          debug: false,
         },
       },
       
