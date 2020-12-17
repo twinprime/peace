@@ -25,7 +25,6 @@ export default class EnemyControl {
 
     const helipad = new HelipadGameObject(scene)
     helipad.create(scene.platforms, nextPos, true)
-    console.log("Create helipad at " + nextPos)
     nextPos -= 64 + 15
 
     this.factory = new FactoryGameObject(scene)

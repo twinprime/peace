@@ -37,6 +37,7 @@ export default class PlayerControl {
     })
 
     this.cashText = scene.add.text(10, 25, `$${this.cash}`)
+    this.cashText.setScrollFactor(0, 0)
 
     let nextPos = 10 + 64
 
