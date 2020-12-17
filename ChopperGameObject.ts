@@ -1,6 +1,5 @@
 import GameObject from "./GameObject"
 import GameScene from "./GameScene"
-import HealthBarGameObject from "./HealthBarGameObject"
 
 export default class ChopperGameObject extends GameObject {
   private body: Phaser.Physics.Arcade.Body

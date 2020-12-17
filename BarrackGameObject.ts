@@ -11,6 +11,7 @@ export default class BarrackGameObject extends GameObject {
     super(scene)
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   create(x: number, faceLeft: boolean): void {
     this.sprite = this.scene.add.sprite(x, this.scene.groundPos - 32, "barrack")
     this.sprite.setScale(0.5, 0.5)

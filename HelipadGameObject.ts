@@ -12,6 +12,7 @@ export default class HelipadGameObject extends GameObject {
     super(scene)
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   create(physicsGroup: Phaser.Physics.Arcade.StaticGroup, x: number, faceLeft: boolean): void {
     this.sprite = this.scene.add.sprite(x, this.scene.groundPos - 8, "helipad", 0)
     this.sprite.anims.play("helipad")

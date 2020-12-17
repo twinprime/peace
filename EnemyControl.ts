@@ -45,6 +45,7 @@ export default class EnemyControl {
     setTimeout(() => this.buildTank(), 5000)
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   update(time: number, delta: number): void {
     this.aaGunObjects.forEach(gun => gun.update(time))
   }

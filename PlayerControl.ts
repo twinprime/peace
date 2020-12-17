@@ -66,6 +66,7 @@ export default class PlayerControl {
     this._chopper.create(helipad.center.x, helipad.center.y - 16, (health) => healthBar.health = health)
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   update(time: number, delta: number): void {
     this._chopper.update()
     this.aaGunObjects.forEach(gun => gun.update(time))
