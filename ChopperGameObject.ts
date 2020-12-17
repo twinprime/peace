@@ -26,6 +26,7 @@ export default class ChopperGameObject extends GameObject {
     this.spriteGp = this.scene.add.group()
     
     this.bodySprite = this.spriteGp.create(x, y, "chopper", 0) as Phaser.GameObjects.Sprite
+    this.bodySprite.setDepth(100)
     this.scene.physics.add.existing(this.bodySprite)
     this.body = this.bodySprite.body as Phaser.Physics.Arcade.Body
     this.body.setCollideWorldBounds(true)
@@ -34,6 +35,7 @@ export default class ChopperGameObject extends GameObject {
     
     this.tailSprite = this.spriteGp.create(x - 32, y, "chopper", 1) as Phaser.GameObjects.Sprite
     this.tailSprite.setVisible(false)
+    this.tailSprite.setDepth(100)
 
     this.healthCallback = healthCallback
 
@@ -45,7 +47,9 @@ export default class ChopperGameObject extends GameObject {
     })
   }
 
-  update(cursors: Phaser.Types.Input.Keyboard.CursorKeys): void {
+  update(): void {
+    const cursors = this.scene.cursors
+    
     this.updateTailPosition()
 
     if (cursors.down.isDown) {
@@ -126,5 +130,9 @@ export default class ChopperGameObject extends GameObject {
       this.tailSprite.setX(this.body.position.x + 16 - (32 - 3) * this.facing)
       this.tailSprite.setY(this.body.position.y + 16 - 13)
     }
+  }
+
+  static preload(scene: GameScene): void {
+    scene.load.spritesheet("chopper", "/images/chopper.png", { frameWidth: 32, frameHeight: 32 })
   }
 }
