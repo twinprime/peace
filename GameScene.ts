@@ -20,9 +20,6 @@ export default class GameScene extends Phaser.Scene {
   private playerControl: PlayerControl
   private enemeyControl: EnemyControl
 
-  private _cursors: Phaser.Types.Input.Keyboard.CursorKeys
-  get cursors(): Phaser.Types.Input.Keyboard.CursorKeys { return this._cursors }
-
   private _platformBodies: Phaser.Physics.Arcade.StaticGroup
   get platforms(): Phaser.Physics.Arcade.StaticGroup { return this._platformBodies }
 
@@ -100,8 +97,6 @@ export default class GameScene extends Phaser.Scene {
 
     this.cameras.main.setBounds(0, 0, this.worldWidth, this.worldHeight)
     this.cameras.main.startFollow(this.playerControl.chopper.sprite)
-
-    this._cursors = this.input.keyboard.createCursorKeys()
   }
 
   createBullet(x: number, y: number, velocityX: number, velocityY: number): BulletGameObject {

@@ -12,6 +12,7 @@ export default class ChopperGameObject extends GameObject {
   private drag = 300
   private health = 100
   private healthCallback?: ((health: number) => void)
+  private keys: Record<"W"|"S"|"A"|"D", Phaser.Input.Keyboard.Key>
 
   get sprite(): Phaser.GameObjects.Sprite {
     return this.bodySprite
@@ -19,6 +20,8 @@ export default class ChopperGameObject extends GameObject {
 
   constructor(scene: GameScene) {
     super(scene)
+    this.keys = this.scene.input.keyboard.addKeys("W,S,A,D") as 
+      Record<"W"|"S"|"A"|"D", Phaser.Input.Keyboard.Key>
   }
 
   create(x: number, y: number, healthCallback?: ((health: number) => void)): void {
@@ -47,17 +50,15 @@ export default class ChopperGameObject extends GameObject {
   }
 
   update(): void {
-    const cursors = this.scene.cursors
-    
     this.updateTailPosition()
 
-    if (cursors.down.isDown) {
+    if (this.keys.S.isDown) {
       if (this.body.velocity.y < this.maxSpeed) {
         this.body.setAccelerationY(this.acceleration)
       } else {
         this.body.setAccelerationY(0)
       }
-    } else if (cursors.up.isDown) {
+    } else if (this.keys.W.isDown) {
       if (this.body.velocity.y > -this.maxSpeed) {
         this.body.setAccelerationY(-this.acceleration)
       } else {
@@ -71,14 +72,14 @@ export default class ChopperGameObject extends GameObject {
       } else this.body.setAccelerationY(0)
     }
 
-    if (cursors.right.isDown) {
+    if (this.keys.D.isDown) {
       this.changeFacing(1)
       if (this.body.velocity.x < this.maxSpeed) {
         this.body.setAccelerationX(this.acceleration)
       } else {
         this.body.setAccelerationX(0)
       }
-    } else if (cursors.left.isDown) {
+    } else if (this.keys.A.isDown) {
       this.changeFacing(-1)
       if (this.body.velocity.x > -this.maxSpeed) {
         this.body.setAccelerationX(-this.acceleration)

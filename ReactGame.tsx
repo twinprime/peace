@@ -16,7 +16,7 @@ export class ReactGame extends React.Component {
       
       scale: {
         mode: Phaser.Scale.FIT,
-        width: 800,
+        width: 1068,
         height: 600,
       },
       

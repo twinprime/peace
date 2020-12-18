@@ -20,7 +20,7 @@ function Example() {
 
 ReactDOM.render(
   <div>
-    <Example />
+    <div className="title"><img src="/logo.png"></img><span className="bigtext">Peace</span>{" "}<span className="smalltext">[is not an option]</span></div>
     <ReactGame />
     <Example />
   </div>,

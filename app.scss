@@ -1,5 +1,24 @@
 @import "~bootstrap/scss/bootstrap";
 
+.title {
+  display: inline-block;
+
+  img {
+    width: 64px;
+    height: 64px;
+  }
+
+  .bigtext {
+    font-size: 32px;
+  }
+
+  .smalltext {
+    font-size: 14px;
+    color: red;
+    vertical-align: super;
+  }
+}
+
 #game {
   max-height: 720;
 }
