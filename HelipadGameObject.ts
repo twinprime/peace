@@ -8,6 +8,10 @@ export default class HelipadGameObject extends GameObject {
   private _center: Phaser.Math.Vector2
   get center(): Phaser.Math.Vector2 { return this._center }
 
+  get minX(): number { return this._center.x - 60 }
+  get maxX(): number { return this._center.x + 60 }
+  get ht(): number { return 3 }
+
   constructor(scene: GameScene) {
     super(scene)
   }
@@ -15,7 +19,6 @@ export default class HelipadGameObject extends GameObject {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   create(physicsGroup: Phaser.Physics.Arcade.StaticGroup, x: number, faceLeft: boolean): void {
     this.sprite = this.scene.add.sprite(x, this.scene.groundPos - 8, "helipad", 0)
-    this.sprite.anims.play("helipad")
     const bodyRect = this.scene.add.rectangle(x, this.scene.groundPos - 2, 128, 2, 0)
     bodyRect.setVisible(false)
     physicsGroup.add(bodyRect)
@@ -23,6 +26,11 @@ export default class HelipadGameObject extends GameObject {
     this.body.allowGravity = false
     this.body.immovable = true
     this._center = new Phaser.Math.Vector2(x, this.scene.groundPos - 4)
+  }
+
+  chopperOnPad(onPad: boolean): void {
+    if (onPad) this.sprite.anims.stop()
+    else this.sprite.anims.play("helipad")
   }
 
   static preload(scene: GameScene): void {

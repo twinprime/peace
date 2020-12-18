@@ -3,13 +3,22 @@ import GameScene from "./GameScene"
 
 export default class HealthBarGameObject extends GameObject {
   private _health: number
+  private x: number
+  private y: number
   private graphics: Phaser.GameObjects.Graphics
-
+  
+  private _width = 100
+  get width(): number { return this._health }
+  private _height = 10
+  get height(): number { return this._height }
+  
   constructor(scene: GameScene) {
     super(scene)
   }
 
-  create(health: number): void {
+  create(x: number, y: number, health: number): void {
+    this.x = x
+    this.y = y
     this._health = health
     this.graphics = this.scene.add.graphics()
     this.graphics.setScrollFactor(0, 0)
@@ -26,8 +35,8 @@ export default class HealthBarGameObject extends GameObject {
   private draw() {
     this.graphics.clear()
     this.graphics.fillStyle(0xf5e042)
-    this.graphics.fillRect(10, 10, 100, 10)
+    this.graphics.fillRect(this.x, this.y, this._width, this._height)
     this.graphics.fillStyle(0xff0000)
-    this.graphics.fillRect(10, 10, this._health, 10)
+    this.graphics.fillRect(this.x, this.y, this._health, this._height)
   }
 }

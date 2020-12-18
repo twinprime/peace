@@ -36,8 +36,9 @@ export default class EnemyControl {
     nextPos -= 64 + 15
     
     nextPos -= 100
+    const gunBodies = scene.physics.add.group()
     const aaGun = new AAGunGameObject(scene)
-    aaGun.create(nextPos - 16, Math.PI / 4, true)
+    aaGun.create(gunBodies, nextPos - 16, Math.PI / 4, true)
     this.aaGunObjects.push(aaGun)
     nextPos -= 32 + 15
 

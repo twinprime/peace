@@ -1,44 +1,9 @@
-import GameObject from "./GameObject"
 import GameScene from "./GameScene"
+import HumanGameObject from "./HumanGameObject"
 
-export default class SoldierGameObject extends GameObject {
-  private sprite: Phaser.Physics.Arcade.Sprite
-
+export default class SoldierGameObject extends HumanGameObject {
   constructor(readonly scene: GameScene) {
-    super(scene)
-  }
-
-  create(x: number): void {
-    this.sprite = this.scene.physics.add.sprite(x, this.scene.groundPos - 11, "soldier-stand")
-    this.sprite.setScale(0.5, 0.5)
-    this.sprite.setDepth(99)
-    const body = this.sprite.body as Phaser.Physics.Arcade.Body
-    body.setAllowGravity(false)
-  }
-
-  move(velocityX: number, faceLeft: boolean): void {
-    const body = this.sprite.body as Phaser.Physics.Arcade.Body
-    body.setVelocityX(velocityX)
-
-    if (velocityX != 0) {
-      this.sprite.anims.play("soldier-walk")
-      if (velocityX > 0) this.sprite.setFlipX(true)
-      else this.sprite.setFlipX(false)
-    } else {
-      if (this.sprite.anims.isPlaying) {
-        this.sprite.anims.stop()
-      }
-      this.sprite.setFlipX(!faceLeft)
-    }
-  }
-
-  die(): void {
-    const body = this.sprite.body as Phaser.Physics.Arcade.Body
-    body.setVelocityX(0)
-    this.sprite.anims.play("soldier-die")
-    this.sprite.once("animationcomplete", () => {
-      this.sprite.destroy()
-    })
+    super(scene, "soldier-stand", "soldier-walk", "soldier-die")
   }
 
   static preload(scene: GameScene): void {

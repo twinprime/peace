@@ -5,18 +5,36 @@ export default class AAGunGameObject extends GameObject {
   private _angle = 0
   private lastFired = 0
   private gunSprite: Phaser.GameObjects.Sprite
+  private bodySprite: Phaser.GameObjects.Sprite
   private faceLeft: boolean
+  private maxY: number
 
   constructor(scene: GameScene) {
     super(scene)
   }
 
-  create(x: number, angle: number, faceLeft: boolean): void {
+  create(physicsGroup: Phaser.Physics.Arcade.Group, x: number, angle: number, faceLeft: boolean): void {
     this.faceLeft = faceLeft
-    this.gunSprite = this.scene.add.sprite(x + (faceLeft ? 8 : -8), this.scene.groundPos - 16, "aa-gun", 1)
-    const sprite = this.scene.add.sprite(x, this.scene.groundPos - 16, "aa-gun", 0)
-    if (!faceLeft) sprite.setFlipX(true)
+    this.maxY = this.scene.groundPos - 16
+
+    this.gunSprite = this.scene.add.sprite(x + (faceLeft ? 8 : -8), this.maxY, "aa-gun", 1)
+    this.gunSprite.setDepth(10)
     this.angle = angle
+
+    this.bodySprite = this.scene.physics.add.sprite(x, this.maxY, "aa-gun", 0)
+    this.bodySprite.setDepth(10)
+    if (!faceLeft) this.bodySprite.setFlipX(true)
+    physicsGroup.add(this.bodySprite)
+    const body = this.bodySprite.body as Phaser.Physics.Arcade.Body
+    body.setAllowGravity(false)
+    this.addWrapperProperty(this.bodySprite)
+  }
+
+  moveTo(x: number, y: number): void {
+    this.gunSprite.setX(x + (this.faceLeft ? 8 : -8))
+    this.gunSprite.setY(Math.min(y, this.maxY))
+    this.bodySprite.setX(x)
+    this.bodySprite.setY(Math.min(y, this.maxY))
   }
 
   update(time: number): void {

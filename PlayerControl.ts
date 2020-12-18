@@ -18,6 +18,7 @@ export default class PlayerControl {
   private aaGunObjects: AAGunGameObject[] = []
   private tankObjects: TankGameObject[] = []
   private soliderObjects: SoldierGameObject[] = []
+  private liftableBodies: Phaser.Physics.Arcade.Group
 
   private _chopper: ChopperGameObject
   get chopper(): ChopperGameObject { return this._chopper }
@@ -36,9 +37,6 @@ export default class PlayerControl {
       this.buildTank()
     })
 
-    this.cashText = scene.add.text(10, 25, `$${this.cash}`)
-    this.cashText.setScrollFactor(0, 0)
-
     let nextPos = 10 + 64
 
     const helipad = new HelipadGameObject(scene)
@@ -52,23 +50,32 @@ export default class PlayerControl {
     this.barrack = new BarrackGameObject(scene)
     this.barrack.create(nextPos + 32, false)
     nextPos += 64 + 15
+
+    this.liftableBodies = this.scene.physics.add.group()
     
     nextPos += 100
     const aaGun = new AAGunGameObject(scene)
-    aaGun.create(nextPos + 16, 3 * Math.PI / 4, false)
+    aaGun.create(this.liftableBodies, nextPos + 16, 3 * Math.PI / 4, false)
     this.aaGunObjects.push(aaGun)
     nextPos += 32 + 15
 
     const healthBar = new HealthBarGameObject(scene)
-    healthBar.create(100)
+    healthBar.create(10, 15, 100)
+
+    const onBoardCountText = scene.add.text(10 + healthBar.width + 15, 10, "0")
+
+    this.cashText = scene.add.text(10, healthBar.height + 20, `$${this.cash}`)
+    this.cashText.setScrollFactor(0, 0)
 
     this._chopper = new ChopperGameObject(scene)
-    this._chopper.create(helipad.center.x, helipad.center.y - 16, (health) => healthBar.health = health)
+    this._chopper.create(helipad, this.liftableBodies, 
+      helipad.center.x, helipad.center.y - 15, (health) => healthBar.health = health)
+    this._chopper.setBoardCallback(humans => onBoardCountText.setText(`${humans.length}`))
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   update(time: number, delta: number): void {
-    this._chopper.update()
+    this._chopper.update(time, delta)
     this.aaGunObjects.forEach(gun => gun.update(time))
   }
 
