@@ -3,7 +3,7 @@ import HumanGameObject from "./HumanGameObject"
 
 export default class SoldierGameObject extends HumanGameObject {
   constructor(readonly scene: GameScene) {
-    super(scene, "soldier-stand", "soldier-walk", "soldier-die")
+    super(scene, "soldier-stand", "soldier-walk", "soldier-die", 44, 0.5, true)
   }
 
   static preload(scene: GameScene): void {

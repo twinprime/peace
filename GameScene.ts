@@ -3,6 +3,7 @@ import AAGunGameObject from './AAGunGameObject'
 import BarrackGameObject from './BarrackGameObject'
 import BulletGameObject from './BulletGameObject'
 import ChopperGameObject from './ChopperGameObject'
+import CivilianGameObject from './CivilianGameObject'
 import EnemyControl from './EnemyControl'
 import FactoryGameObject from './FactoryGameObject'
 import GroundGameObject from './GroundGameObject'
@@ -55,6 +56,7 @@ export default class GameScene extends Phaser.Scene {
     ChopperGameObject.preload(this)
     AAGunGameObject.preload(this)
     SoldierGameObject.preload(this)
+    CivilianGameObject.preload(this)
     HelipadGameObject.preload(this)
     FactoryGameObject.preload(this)
     BarrackGameObject.preload(this)
@@ -92,8 +94,16 @@ export default class GameScene extends Phaser.Scene {
 
     HelipadGameObject.createCommon(this)
     SoldierGameObject.createCommon(this)
+    CivilianGameObject.createCommon(this)
     this.playerControl = new PlayerControl(this)
     this.enemeyControl = new EnemyControl(this)
+
+    const civilian = new CivilianGameObject(this)
+    civilian.create(100)
+    civilian.move(10, false)
+    setTimeout(() => civilian.wave(), 3000)
+    setTimeout(() => civilian.move(-10, false), 5000)
+    setTimeout(() => civilian.die(), 7000)
 
     this.cameras.main.setBounds(0, 0, this.worldWidth, this.worldHeight)
     this.cameras.main.startFollow(this.playerControl.chopper.sprite)
