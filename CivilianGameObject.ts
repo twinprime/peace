@@ -2,9 +2,28 @@ import GameScene from "./GameScene"
 import HumanGameObject from "./HumanGameObject"
 
 export default class CivilianGameObject extends HumanGameObject {
-  constructor(readonly scene: GameScene) {
-    //super(scene, "civilian", "civilian-walk", "civilian-die", 256, 0.0625, false)
-    super(scene, "civilian", "civilian-walk", "civilian-die", 256, 0.25, false)
+  static readonly TYPE = "civilian"
+
+  constructor(readonly scene: GameScene, 
+              private readonly homePos: number,
+              private readonly homeCallback: (obj: CivilianGameObject) => void) {
+    super(CivilianGameObject.TYPE, scene, {
+      spriteImage: "civilian",
+      animWalk: "civilian-walk",
+      animDie: "civilian-die",
+      spriteHt: 256,
+      spriteScale: 0.0625,
+      defaultFaceLeft: false
+    })
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  update(time: number, delta: number): void {
+    const body = this.sprite.body as Phaser.Physics.Arcade.Body
+    if (body.x < this.homePos) {
+      this.homeCallback(this)
+      this.sprite.destroy()
+    }
   }
 
   wave(): void {
@@ -42,6 +61,6 @@ export default class CivilianGameObject extends HumanGameObject {
   }
 
   static createIcon(scene: GameScene, x: number, y: number): Phaser.GameObjects.Sprite {
-    return scene.add.sprite(x, y, "civilian", 0)
+    return scene.add.sprite(x, y, "civilian", 0).setScale(0.175, 0.175)
   }
 }

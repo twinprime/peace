@@ -2,8 +2,19 @@ import GameScene from "./GameScene"
 import HumanGameObject from "./HumanGameObject"
 
 export default class SoldierGameObject extends HumanGameObject {
+  static readonly TYPE = "soldier"
+
   constructor(readonly scene: GameScene) {
-    super(scene, "soldier-stand", "soldier-walk", "soldier-die", 44, 0.5, true)
+    super(SoldierGameObject.TYPE, scene, {
+      spriteImage: "soldier-stand",
+      animWalk: "soldier-walk",
+      animDie: "soldier-die",
+      bodyWidth: 29,
+      bodyHeight: 44,
+      spriteHt: 44,
+      spriteScale: 0.5,
+      defaultFaceLeft: true
+    })
   }
 
   static preload(scene: GameScene): void {

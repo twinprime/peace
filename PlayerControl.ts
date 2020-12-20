@@ -1,13 +1,16 @@
 import AAGunGameObject from "./AAGunGameObject"
 import BarrackGameObject from "./BarrackGameObject"
 import ChopperGameObject from "./ChopperGameObject"
+import CivilianGameObject from "./CivilianGameObject"
 import FactoryGameObject from "./FactoryGameObject"
 import GameButton from "./GameButton"
 import GameScene from "./GameScene"
 import HealthBarGameObject from "./HealthBarGameObject"
 import HelipadGameObject from "./HelipadGameObject"
+import HomeBuildingGameObject from "./HomeBuildingGameObject"
 import SoldierGameObject from "./SoldierGameObject"
 import TankGameObject from "./TankGameObject"
+import VillageGameObject from "./VillageGameObject"
 
 export default class PlayerControl {
   private scene: GameScene
@@ -15,10 +18,12 @@ export default class PlayerControl {
   private cashText: Phaser.GameObjects.Text
   private factory: FactoryGameObject
   private barrack: BarrackGameObject
+  private villages: VillageGameObject[] = []
   private aaGunObjects: AAGunGameObject[] = []
   private tankObjects: TankGameObject[] = []
   private soliderObjects: SoldierGameObject[] = []
   private liftableBodies: Phaser.Physics.Arcade.Group
+  private boardableBodies: Phaser.Physics.Arcade.Group
 
   private _chopper: ChopperGameObject
   get chopper(): ChopperGameObject { return this._chopper }
@@ -37,7 +42,13 @@ export default class PlayerControl {
       this.buildTank()
     })
 
+    this.boardableBodies = scene.physics.add.group()
+
     let nextPos = 10 + 64
+
+    const homeBuilding = new HomeBuildingGameObject(scene)
+    homeBuilding.create(nextPos)
+    nextPos += 128 + 15
 
     const helipad = new HelipadGameObject(scene)
     helipad.create(scene.platforms, nextPos, false)
@@ -59,24 +70,48 @@ export default class PlayerControl {
     this.aaGunObjects.push(aaGun)
     nextPos += 32 + 15
 
+    nextPos += 100
+    const village = new VillageGameObject(scene, homeBuilding.entryX, this.boardableBodies,
+       v => console.log("Villager is home!"))
+    village.create(nextPos, false)
+    this.villages.push(village)
+    nextPos += 128 + 15
+
     const healthBar = new HealthBarGameObject(scene)
     healthBar.create(10, 15, 100)
 
-    const onBoardCountText = scene.add.text(10 + healthBar.width + 15, 10, "0")
+    let onBoardCountX = 10 + healthBar.width + 25
+    const civilianIcon = CivilianGameObject.createIcon(scene, onBoardCountX, 16)
+    civilianIcon.setScale(civilianIcon.scaleX * 0.5, civilianIcon.scaleY * 0.5).setScrollFactor(0, 0)
+    onBoardCountX += 16
+    const civilianOnBoardCountText = scene.add.text(onBoardCountX, 10, "0")
+    civilianOnBoardCountText.setScrollFactor(0, 0)
+    onBoardCountX += 16 + 10
+    const soldierIcon = SoldierGameObject.createIcon(scene, onBoardCountX, 16)
+    soldierIcon.setScale(soldierIcon.scaleX * 0.5, soldierIcon.scaleY * 0.5).setScrollFactor(0, 0)
+    onBoardCountX += 16 + 5
+    const soldierOnBoardCountText = scene.add.text(onBoardCountX, 10, "0")
+    soldierOnBoardCountText.setScrollFactor(0, 0)
 
     this.cashText = scene.add.text(10, healthBar.height + 20, `$${this.cash}`)
     this.cashText.setScrollFactor(0, 0)
 
     this._chopper = new ChopperGameObject(scene)
     this._chopper.create(helipad, this.liftableBodies, 
-      helipad.center.x, helipad.center.y - 15, (health) => healthBar.health = health)
-    this._chopper.setBoardCallback(humans => onBoardCountText.setText(`${humans.length}`))
+      helipad.center.x, helipad.center.y - 15, this.boardableBodies,
+      (health) => healthBar.health = health)
+    this._chopper.setBoardCallback(humans => {
+      soldierOnBoardCountText.setText(`${humans.get(SoldierGameObject.TYPE)?.length ?? 0}`)
+      civilianOnBoardCountText.setText(`${humans.get(CivilianGameObject.TYPE)?.length ?? 0}`)
+    })
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   update(time: number, delta: number): void {
     this._chopper.update(time, delta)
+    this.villages.forEach(v => v.update(time, delta))
     this.aaGunObjects.forEach(gun => gun.update(time))
+    this.soliderObjects.forEach(soldier => soldier.update(time, delta))
   }
 
   private adjustCash(amt: number) {
@@ -93,7 +128,7 @@ export default class PlayerControl {
 
   private buildSoldier() {
     const soldier = new SoldierGameObject(this.scene)
-    soldier.create(this.barrack.spawnX)
+    soldier.create(this.barrack.spawnX, this.boardableBodies)
     soldier.move(10, false)
     this.soliderObjects.push(soldier)
   }

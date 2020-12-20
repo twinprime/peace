@@ -8,10 +8,12 @@ import EnemyControl from './EnemyControl'
 import FactoryGameObject from './FactoryGameObject'
 import GroundGameObject from './GroundGameObject'
 import HelipadGameObject from './HelipadGameObject'
+import HomeBuildingGameObject from './HomeBuildingGameObject'
 import PlayerControl from './PlayerControl'
 import SoldierGameObject from './SoldierGameObject'
 import TankGameObject from './TankGameObject'
 import TreeGameObject from './TreeGameObject'
+import VillageGameObject from './VillageGameObject'
 
 export default class GameScene extends Phaser.Scene {
   private frameTime = 0
@@ -52,6 +54,8 @@ export default class GameScene extends Phaser.Scene {
     this.load.spritesheet('nature', '/images/nature.png', { frameWidth: 16, frameHeight: 16 })
     this.load.spritesheet("explode", "/images/explode.png", { frameWidth: 64, frameHeight: 64 })
 
+    HomeBuildingGameObject.preload(this)
+    VillageGameObject.preload(this)
     BulletGameObject.preload(this)
     ChopperGameObject.preload(this)
     AAGunGameObject.preload(this)
@@ -97,13 +101,6 @@ export default class GameScene extends Phaser.Scene {
     CivilianGameObject.createCommon(this)
     this.playerControl = new PlayerControl(this)
     this.enemeyControl = new EnemyControl(this)
-
-    const civilian = new CivilianGameObject(this)
-    civilian.create(100)
-    civilian.move(10, false)
-    setTimeout(() => civilian.wave(), 3000)
-    setTimeout(() => civilian.move(-10, false), 5000)
-    setTimeout(() => civilian.die(), 7000)
 
     this.cameras.main.setBounds(0, 0, this.worldWidth, this.worldHeight)
     this.cameras.main.startFollow(this.playerControl.chopper.sprite)

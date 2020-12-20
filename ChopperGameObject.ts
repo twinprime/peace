@@ -1,14 +1,12 @@
+import CivilianGameObject from "./CivilianGameObject"
 import GameObject from "./GameObject"
 import GameScene from "./GameScene"
 import HelipadGameObject from "./HelipadGameObject"
+import HumanBoardable from "./HumanBoardable"
 import HumanGameObject from "./HumanGameObject"
+import SoldierGameObject from "./SoldierGameObject"
 
-enum ChopperState {
-  Home = 0, Flying, Landed, Lowering
-}
-
-export default class ChopperGameObject extends GameObject {
-  private state = ChopperState.Home
+export default class ChopperGameObject extends GameObject implements HumanBoardable {
   private body: Phaser.Physics.Arcade.Body
   private tailSprite: Phaser.GameObjects.Sprite
   private bodySprite: Phaser.GameObjects.Sprite
@@ -31,9 +29,12 @@ export default class ChopperGameObject extends GameObject {
   private justLiftedObject = false
   private liftedObject: GameObject
 
-  private _humansOnBoard: HumanGameObject[] = []
+  private _humansOnBoard = new Map<string, HumanGameObject[]>()
   private maxHumans = 10
-  private boardCallback: (humans: HumanGameObject[]) => void
+  private boardCallback: (humans: Map<string, HumanGameObject[]>) => void
+  private lastBoardTime = 0
+  private lastDisembarkTime = 0
+  private perBoardingTime = 1000
 
   get sprite(): Phaser.GameObjects.Sprite {
     return this.bodySprite
@@ -45,34 +46,59 @@ export default class ChopperGameObject extends GameObject {
       Record<"W"|"S"|"A"|"D"|"SPACE", Phaser.Input.Keyboard.Key>
   }
 
+  get boardableGameObject(): Phaser.GameObjects.GameObject { return this.bodySprite }
+
   board(human: HumanGameObject): boolean {
-    if (this._humansOnBoard.length < this.maxRopeLength) {
-      this._humansOnBoard.push(human)
+    const time = Date.now()
+    if (this.onGround && (time - this.lastBoardTime) > this.perBoardingTime &&
+        this.countHumansOnBoard() < this.maxHumans) {
+      this.lastBoardTime = time
+      this.addHumansOnBoard(human)
       this.boardCallback(this._humansOnBoard)
       return true
     }
     return false
   }
 
-  setBoardCallback(boardCallback: ((humans: HumanGameObject[]) => void)): void {
+  private countHumansOnBoard(type?: string) {
+    let count = 0
+    if (!type) this._humansOnBoard.forEach((humans) => count += humans.length)
+    else {
+      const humans = this._humansOnBoard.get(type)
+      if (humans) count += humans.length
+    }
+    return count
+  }
+
+  private addHumansOnBoard(human: HumanGameObject) {
+    let humans = this._humansOnBoard.get(human.type)
+    if (!humans) {
+      humans = []
+      this._humansOnBoard.set(human.type, humans)
+    }
+    humans.push(human)
+  }
+
+  setBoardCallback(boardCallback: ((humans: Map<string, HumanGameObject[]>) => void)): void {
     this.boardCallback = boardCallback
   }
 
   create(helipad: HelipadGameObject, liftableBodies: Phaser.Physics.Arcade.Group, 
-         x: number, y: number, 
+         x: number, y: number, physiscsGroup: Phaser.Physics.Arcade.Group,
          healthCallback: ((health: number) => void)): void {
     this.helipad = helipad
     this.spriteGp = this.scene.add.group()
     
     this.bodySprite = this.spriteGp.create(x, y, "chopper", 0) as Phaser.GameObjects.Sprite
     this.bodySprite.setDepth(100)
-    this.scene.physics.add.existing(this.bodySprite)
+    physiscsGroup.add(this.bodySprite)
     this.body = this.bodySprite.body as Phaser.Physics.Arcade.Body
     this.body.setCollideWorldBounds(true)
     this.body.setAllowGravity(false)
     this.body.useDamping = true
     this.body.setDrag(0.9, 0.9)
     this.scene.physics.add.collider(this.bodySprite, this.scene.platforms)
+    this.addWrapperProperty(this.bodySprite)
     
     this.tailSprite = this.spriteGp.create(x - 32, y, "chopper", 1) as Phaser.GameObjects.Sprite
     this.tailSprite.setVisible(false)
@@ -138,7 +164,7 @@ export default class ChopperGameObject extends GameObject {
 
     let onPad = false
 
-    if (this.body.acceleration.x == 0 && this.body.acceleration.y == 0) {
+    if (this.body.acceleration.x == 0) {
       if (this.facing != 0 && Math.abs(this.body.velocity.x) < 2) this.changeFacing(0)
 
       if (this.facing == 0) {
@@ -156,12 +182,38 @@ export default class ChopperGameObject extends GameObject {
       this.onPad = onPad
       this.helipad.chopperOnPad(this.onPad)
     }
+
+    this.updateOnBoard(time)
     
     this.updateRope(delta)
   }
 
+  private updateOnBoard(time: number) {
+    if ((this.onGround || this.onPad) && !this.liftedObject && this.keys.SPACE.isDown &&
+        this.ropeVelocity == 0 && this.ropeLength == 0) {
+      if ((time - this.lastDisembarkTime) >= this.perBoardingTime) {
+        let h: HumanGameObject = undefined
+        let dir = 1
+        if (this.onGround) {
+          const humans = this._humansOnBoard.get(SoldierGameObject.TYPE)
+          if (humans) h = humans.pop()
+        } else if (this.onPad) {
+          const humans = this._humansOnBoard.get(CivilianGameObject.TYPE)
+          if (humans) h = humans.pop()
+          dir = -1
+        }
+        if (h) {
+          this.lastDisembarkTime = time
+          const xAdj = dir > 0 ? (32 + h.width / 2 + 2) : (-h.width/2 - 2)
+          h.disembark(this.body.x + xAdj, h.walkSpeed * dir)
+          this.boardCallback(this._humansOnBoard)
+        }
+      }
+    }
+  }
+
   private updateRope(delta: number) {
-    if (!this.justLiftedObject && this.keys.SPACE.isDown) {
+    if (!this.onGround && !this.onPad && !this.justLiftedObject && this.keys.SPACE.isDown) {
       if (!this.liftedObject && this.ropeVelocity == 0 && this.facing == 0) {
         this.ropeVelocity = 64
       } else if (this.liftedObject) {
