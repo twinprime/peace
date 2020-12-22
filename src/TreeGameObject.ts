@@ -2,8 +2,8 @@ import GameObject from "./GameObject"
 import GameScene from "./GameScene"
 
 export default class TreeGameObject extends GameObject {
-  private sprites: Phaser.GameObjects.Sprite[] = []
-  private body: Phaser.Physics.Arcade.Body
+  private readonly sprites: Phaser.GameObjects.Sprite[] = []
+  private readonly body: Phaser.Physics.Arcade.Body
 
   constructor(readonly scene: GameScene, physicsGroup: Phaser.Physics.Arcade.Group,
               x: number, y: number, ht: number) {

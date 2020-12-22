@@ -2,7 +2,7 @@ import GameObject from "./GameObject"
 import GameScene from "./GameScene"
 
 export default class TankGameObject extends GameObject {
-  private sprite: Phaser.Physics.Arcade.Sprite
+  private readonly sprite: Phaser.Physics.Arcade.Sprite
   private faceLeft: boolean
 
   constructor(scene: GameScene, x: number) {

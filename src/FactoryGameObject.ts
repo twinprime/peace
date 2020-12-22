@@ -2,9 +2,9 @@ import GameObject from "./GameObject"
 import GameScene from "./GameScene"
 
 export default class FactoryGameObject extends GameObject {
-  private sprite: Phaser.GameObjects.Sprite
+  private readonly sprite: Phaser.GameObjects.Sprite
 
-  private _spawnX: number
+  private readonly _spawnX: number
   get spawnX(): number { return this._spawnX }
 
   constructor(scene: GameScene, x: number, faceLeft: boolean) {

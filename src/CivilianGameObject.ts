@@ -8,14 +8,14 @@ enum CivilianState {
 export default class CivilianGameObject extends HumanGameObject {
   static readonly TYPE = "civilian"
 
-  private static minStateDuration = 500
-  private static chopperLookInterval = 200
-  private static chopperWaveDistanceSq = 500*500
-  private static maxWanderDistance = 100
-  private static minBoardDistance = 300
-  private static wanderSpeedMin = 5
-  private static wanderSpeedMax = 10
-  private static runSpeed = 15
+  private static readonly minStateDuration = 500
+  private static readonly chopperLookInterval = 200
+  private static readonly chopperWaveDistanceSq = 500*500
+  private static readonly maxWanderDistance = 100
+  private static readonly minBoardDistance = 300
+  private static readonly wanderSpeedMin = 5
+  private static readonly wanderSpeedMax = 10
+  private static readonly runSpeed = 15
 
   private state = CivilianState.Move
   private lastLookForChopper = 0

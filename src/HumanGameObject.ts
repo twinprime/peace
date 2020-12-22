@@ -3,7 +3,7 @@ import GameScene from "./GameScene"
 import HumanBoardable from "./HumanBoardable"
 
 export default class HumanGameObject extends GameObject {
-  protected sprite: Phaser.Physics.Arcade.Sprite
+  protected readonly sprite: Phaser.Physics.Arcade.Sprite
   private readonly spriteHalfHt: number
 
   constructor(readonly type: string,

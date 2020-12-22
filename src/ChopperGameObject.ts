@@ -7,10 +7,10 @@ import HumanGameObject from "./HumanGameObject"
 import SoldierGameObject from "./SoldierGameObject"
 
 export default class ChopperGameObject extends GameObject implements HumanBoardable {
-  private body: Phaser.Physics.Arcade.Body
-  private tailSprite: Phaser.GameObjects.Sprite
-  private bodySprite: Phaser.GameObjects.Sprite
-  private spriteGp: Phaser.GameObjects.Group
+  private readonly body: Phaser.Physics.Arcade.Body
+  private readonly tailSprite: Phaser.GameObjects.Sprite
+  private readonly bodySprite: Phaser.GameObjects.Sprite
+  private readonly spriteGp: Phaser.GameObjects.Group
   private facing = 0
   private maxSpeed = 600
   private acceleration = 600
@@ -18,22 +18,22 @@ export default class ChopperGameObject extends GameObject implements HumanBoarda
   private healthCallback?: ((health: number) => void)
   private keys: Record<"W"|"S"|"A"|"D"|"SPACE", Phaser.Input.Keyboard.Key>
 
-  private helipad: HelipadGameObject
+  private readonly helipad: HelipadGameObject
 
   private _onGround = false
   get onGround(): boolean { return this._onGround }
   
   private onPad = false
 
-  private ropeObject: Phaser.GameObjects.Rectangle
+  private readonly ropeObject: Phaser.GameObjects.Rectangle
   private ropeLength = 0
   private ropeVelocity = 0
   private maxRopeLength = 128
   private justLiftedObject = false
   private liftedObject: GameObject
 
-  private _humansOnBoard = new Map<string, HumanGameObject[]>()
-  private maxHumans = 10
+  private readonly _humansOnBoard = new Map<string, HumanGameObject[]>()
+  private readonly maxHumans = 10
   private boardCallback: (humans: Map<string, HumanGameObject[]>) => void
   private lastBoardTime = 0
   private lastDisembarkTime = 0

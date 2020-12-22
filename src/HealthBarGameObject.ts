@@ -5,7 +5,7 @@ export default class HealthBarGameObject extends GameObject {
   private _health: number
   private x: number
   private y: number
-  private graphics: Phaser.GameObjects.Graphics
+  private readonly graphics: Phaser.GameObjects.Graphics
   
   private _width = 100
   get width(): number { return this._health }

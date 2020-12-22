@@ -2,10 +2,10 @@ import GameObject from "./GameObject"
 import GameScene from "./GameScene"
 
 export default class HelipadGameObject extends GameObject {
-  private sprite: Phaser.GameObjects.Sprite
-  private body: Phaser.Physics.Arcade.Body
+  private readonly sprite: Phaser.GameObjects.Sprite
+  private readonly body: Phaser.Physics.Arcade.Body
 
-  private _center: Phaser.Math.Vector2
+  private readonly _center: Phaser.Math.Vector2
   get center(): Phaser.Math.Vector2 { return this._center }
 
   get minX(): number { return this._center.x - 60 }

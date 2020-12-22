@@ -3,13 +3,13 @@ import GameObject from "./GameObject"
 import GameScene from "./GameScene"
 
 export default class VillageGameObject extends GameObject {
-  private sprite: Phaser.GameObjects.Sprite
+  private readonly sprite: Phaser.GameObjects.Sprite
   private villagers: CivilianGameObject[] = []
+  private readonly maxVillagers = 3
+  private readonly minTimeBetweenSpawn = 5000
   private lastSpawnTime = 0
-  private maxVillagers = 3
-  private minTimeBetweenSpawn = 5000
 
-  private _spawnX: number
+  private readonly _spawnX: number
   get spawnX(): number { return this._spawnX }
 
   constructor(scene: GameScene, 

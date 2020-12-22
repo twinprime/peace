@@ -2,7 +2,7 @@ import GameObject from "./GameObject"
 import GameScene from "./GameScene"
 
 export default class BulletGameObject extends GameObject {
-  private _sprite: Phaser.GameObjects.Sprite
+  private readonly _sprite: Phaser.GameObjects.Sprite
 
   get sprite(): Phaser.GameObjects.Sprite { return this._sprite }
 

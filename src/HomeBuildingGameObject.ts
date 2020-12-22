@@ -2,7 +2,7 @@ import GameObject from "./GameObject"
 import GameScene from "./GameScene"
 
 export default class HomeBuildingGameObject extends GameObject {
-  private _entryX: number
+  private readonly _entryX: number
   get entryX(): number { return this._entryX }
 
   constructor(scene: GameScene, x: number) {
