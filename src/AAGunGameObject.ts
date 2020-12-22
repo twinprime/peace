@@ -11,11 +11,10 @@ export default class AAGunGameObject extends GameObject {
   private faceLeft: boolean
   private maxY: number
 
-  constructor(scene: GameScene) {
+  constructor(scene: GameScene, physicsGroup: Phaser.Physics.Arcade.Group, 
+              x: number, angle: number, faceLeft: boolean) {
     super(scene)
-  }
 
-  create(physicsGroup: Phaser.Physics.Arcade.Group, x: number, angle: number, faceLeft: boolean): void {
     this.faceLeft = faceLeft
     this.maxY = this.scene.groundPos - 16
 

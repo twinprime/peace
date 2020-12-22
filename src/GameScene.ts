@@ -85,13 +85,11 @@ export default class GameScene extends Phaser.Scene {
 
     this._platformBodies = this.physics.add.staticGroup()
     this.ground = new GroundGameObject(this)
-    this.ground.create()
 
     this._groundPos = this.sys.game.scale.gameSize.height - 32
 
     this._treeBodies = this.physics.add.group()
-    const tree = new TreeGameObject(this)
-    tree.create(this._treeBodies, 700, this._groundPos, 3)
+    const tree = new TreeGameObject(this, this._treeBodies, 700, this._groundPos, 3)
     this.treeObjects.push(tree)
 
     this._bulletBodies = this.physics.add.group()
@@ -107,8 +105,7 @@ export default class GameScene extends Phaser.Scene {
   }
 
   createBullet(x: number, y: number, velocityX: number, velocityY: number): BulletGameObject {
-    const bullet = new BulletGameObject(this, this._bulletBodies)
-    bullet.create(x, y, velocityX, velocityY)
+    const bullet = new BulletGameObject(this, this._bulletBodies, x, y, velocityX, velocityY)
     this.bulletObjects.set(bullet.sprite, bullet)
     return bullet
   }

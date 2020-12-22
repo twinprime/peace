@@ -4,7 +4,7 @@ import HumanGameObject from "./HumanGameObject"
 export default class SoldierGameObject extends HumanGameObject {
   static readonly TYPE = "soldier"
 
-  constructor(readonly scene: GameScene) {
+  constructor(readonly scene: GameScene, x: number, boardableObjectGroup?: Phaser.Physics.Arcade.Group) {
     super(SoldierGameObject.TYPE, scene, {
       spriteImage: "soldier-stand",
       animWalk: "soldier-walk",
@@ -14,7 +14,7 @@ export default class SoldierGameObject extends HumanGameObject {
       spriteHt: 44,
       spriteScale: 0.5,
       defaultFaceLeft: true
-    })
+    }, x, boardableObjectGroup)
   }
 
   static preload(scene: GameScene): void {

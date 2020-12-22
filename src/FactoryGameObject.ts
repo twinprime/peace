@@ -7,11 +7,9 @@ export default class FactoryGameObject extends GameObject {
   private _spawnX: number
   get spawnX(): number { return this._spawnX }
 
-  constructor(scene: GameScene) {
+  constructor(scene: GameScene, x: number, faceLeft: boolean) {
     super(scene)
-  }
-
-  create(x: number, faceLeft: boolean): void {
+    
     this.sprite = this.scene.add.sprite(x, this.scene.groundPos - 64, "factory")
     if (!faceLeft) {
       this.sprite.setFlipX(true)

@@ -12,11 +12,9 @@ export default class HealthBarGameObject extends GameObject {
   private _height = 10
   get height(): number { return this._height }
   
-  constructor(scene: GameScene) {
+  constructor(scene: GameScene, x: number, y: number, health: number) {
     super(scene)
-  }
-
-  create(x: number, y: number, health: number): void {
+    
     this.x = x
     this.y = y
     this._health = health

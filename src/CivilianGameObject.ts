@@ -17,13 +17,14 @@ export default class CivilianGameObject extends HumanGameObject {
   private static wanderSpeedMax = 10
   private static runSpeed = 15
 
-  private spawnPos: number
   private state = CivilianState.Move
   private lastLookForChopper = 0
   private lastStateChange = 0
 
   constructor(readonly scene: GameScene,
               private readonly homePos: number,
+              private readonly spawnPos: number, 
+              boardableObjectGroup: Phaser.Physics.Arcade.Group,
               private readonly homeCallback: (obj: CivilianGameObject) => void) {
     super(CivilianGameObject.TYPE, scene, {
       spriteImage: "civilian",
@@ -32,12 +33,7 @@ export default class CivilianGameObject extends HumanGameObject {
       spriteHt: 256,
       spriteScale: 0.0625,
       defaultFaceLeft: false
-    })
-  }
-
-  create(x: number, boardableObjectGroup?: Phaser.Physics.Arcade.Group): void {
-    this.spawnPos = x
-    super.create(x, boardableObjectGroup)
+    }, spawnPos, boardableObjectGroup)
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

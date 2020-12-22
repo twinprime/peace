@@ -19,18 +19,10 @@ export default class HumanGameObject extends GameObject {
                 spriteHt: number,
                 spriteScale: number,
                 defaultFaceLeft: boolean
-              }) {
+              },
+              x: number, boardableObjectGroup?: Phaser.Physics.Arcade.Group) {
     super(scene)
     this.spriteHalfHt = this.config.spriteHt * this.config.spriteScale / 2
-  }
-
-  get width(): number { 
-    return (this.sprite.body as Phaser.Physics.Arcade.Body).width 
-  }
-
-  get walkSpeed(): number { return 10 }
-
-  create(x: number, boardableObjectGroup?: Phaser.Physics.Arcade.Group): void {
     this.sprite = this.scene.physics.add.sprite(x, this.scene.groundPos - this.spriteHalfHt, this.config.spriteImage, 0)
     this.sprite.setScale(this.config.spriteScale, this.config.spriteScale)
     this.sprite.setDepth(99)
@@ -53,6 +45,12 @@ export default class HumanGameObject extends GameObject {
       })
     }
   }
+
+  get width(): number { 
+    return (this.sprite.body as Phaser.Physics.Arcade.Body).width 
+  }
+
+  get walkSpeed(): number { return 10 }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   update(time: number, delta: number): void {

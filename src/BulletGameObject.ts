@@ -6,12 +6,10 @@ export default class BulletGameObject extends GameObject {
 
   get sprite(): Phaser.GameObjects.Sprite { return this._sprite }
 
-  constructor(scene: GameScene, readonly physicsGroup: Phaser.Physics.Arcade.Group) {
+  constructor(scene: GameScene, readonly physicsGroup: Phaser.Physics.Arcade.Group, 
+              x: number, y: number, 
+              velocityX: number, velocityY: number) {
     super(scene)
-  }
-
-  create(x: number, y: number, 
-         velocityX: number, velocityY: number): void {
     this._sprite = this.scene.add.sprite(x, y, "bullet")
     this._sprite.setDepth(200)
     this.physicsGroup.add(this._sprite)

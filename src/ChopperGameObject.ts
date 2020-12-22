@@ -43,52 +43,12 @@ export default class ChopperGameObject extends GameObject implements HumanBoarda
     return this.bodySprite
   }
 
-  constructor(scene: GameScene) {
+  constructor(scene: GameScene, helipad: HelipadGameObject, liftableBodies: Phaser.Physics.Arcade.Group, 
+              x: number, y: number, physiscsGroup: Phaser.Physics.Arcade.Group,
+              healthCallback: ((health: number) => void)) {
     super(scene)
     this.keys = this.scene.input.keyboard.addKeys("W,S,A,D,SPACE") as 
       Record<"W"|"S"|"A"|"D"|"SPACE", Phaser.Input.Keyboard.Key>
-  }
-
-  get boardableGameObject(): Phaser.GameObjects.GameObject { return this.bodySprite }
-
-  board(human: HumanGameObject): boolean {
-    const time = Date.now()
-    if (this._onGround && (time - this.lastBoardTime) > this.perBoardingTime &&
-        this.countHumansOnBoard() < this.maxHumans) {
-      this.lastBoardTime = time
-      this.addHumansOnBoard(human)
-      this.boardCallback(this._humansOnBoard)
-      return true
-    }
-    return false
-  }
-
-  private countHumansOnBoard(type?: string) {
-    let count = 0
-    if (!type) this._humansOnBoard.forEach((humans) => count += humans.length)
-    else {
-      const humans = this._humansOnBoard.get(type)
-      if (humans) count += humans.length
-    }
-    return count
-  }
-
-  private addHumansOnBoard(human: HumanGameObject) {
-    let humans = this._humansOnBoard.get(human.type)
-    if (!humans) {
-      humans = []
-      this._humansOnBoard.set(human.type, humans)
-    }
-    humans.push(human)
-  }
-
-  setBoardCallback(boardCallback: ((humans: Map<string, HumanGameObject[]>) => void)): void {
-    this.boardCallback = boardCallback
-  }
-
-  create(helipad: HelipadGameObject, liftableBodies: Phaser.Physics.Arcade.Group, 
-         x: number, y: number, physiscsGroup: Phaser.Physics.Arcade.Group,
-         healthCallback: ((health: number) => void)): void {
     this.helipad = helipad
     this.spriteGp = this.scene.add.group()
     
@@ -128,6 +88,43 @@ export default class ChopperGameObject extends GameObject implements HumanBoarda
         this.justLiftedObject = true
       }
     })
+  }
+
+  get boardableGameObject(): Phaser.GameObjects.GameObject { return this.bodySprite }
+
+  board(human: HumanGameObject): boolean {
+    const time = Date.now()
+    if (this._onGround && (time - this.lastBoardTime) > this.perBoardingTime &&
+        this.countHumansOnBoard() < this.maxHumans) {
+      this.lastBoardTime = time
+      this.addHumansOnBoard(human)
+      this.boardCallback(this._humansOnBoard)
+      return true
+    }
+    return false
+  }
+
+  private countHumansOnBoard(type?: string) {
+    let count = 0
+    if (!type) this._humansOnBoard.forEach((humans) => count += humans.length)
+    else {
+      const humans = this._humansOnBoard.get(type)
+      if (humans) count += humans.length
+    }
+    return count
+  }
+
+  private addHumansOnBoard(human: HumanGameObject) {
+    let humans = this._humansOnBoard.get(human.type)
+    if (!humans) {
+      humans = []
+      this._humansOnBoard.set(human.type, humans)
+    }
+    humans.push(human)
+  }
+
+  setBoardCallback(boardCallback: ((humans: Map<string, HumanGameObject[]>) => void)): void {
+    this.boardCallback = boardCallback
   }
 
   update(time: number, delta: number): void {

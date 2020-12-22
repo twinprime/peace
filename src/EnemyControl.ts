@@ -23,22 +23,18 @@ export default class EnemyControl {
 
     let nextPos = this.scene.worldWidth - 10 - 64
 
-    const helipad = new HelipadGameObject(scene)
-    helipad.create(scene.platforms, nextPos, true)
+    const helipad = new HelipadGameObject(scene, scene.platforms, nextPos, true)
     nextPos -= 64 + 15
 
-    this.factory = new FactoryGameObject(scene)
-    this.factory.create(nextPos - 128, true)
+    this.factory = new FactoryGameObject(scene, nextPos - 128, true)
     nextPos -= 256 + 15
 
-    this.barrack = new BarrackGameObject(scene)
-    this.barrack.create(nextPos - 32, true)
+    this.barrack = new BarrackGameObject(scene, nextPos - 32, true)
     nextPos -= 64 + 15
     
     nextPos -= 100
     const gunBodies = scene.physics.add.group()
-    const aaGun = new AAGunGameObject(scene)
-    aaGun.create(gunBodies, nextPos - 16, Math.PI / 4, true)
+    const aaGun = new AAGunGameObject(scene, gunBodies, nextPos - 16, Math.PI / 4, true)
     this.aaGunObjects.push(aaGun)
     nextPos -= 32 + 15
 
@@ -52,15 +48,13 @@ export default class EnemyControl {
   }
 
   private buildTank() {
-    const tank = new TankGameObject(this.scene)
-    tank.create(this.factory.spawnX)
+    const tank = new TankGameObject(this.scene, this.factory.spawnX)
     tank.move(-50, true)
     this.tankObjects.push(tank)
   }
 
   private buildSoldier() {
-    const soldier = new SoldierGameObject(this.scene)
-    soldier.create(this.barrack.spawnX)
+    const soldier = new SoldierGameObject(this.scene, this.barrack.spawnX)
     soldier.move(-10, true)
     this.soliderObjects.push(soldier)
   }

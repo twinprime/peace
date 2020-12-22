@@ -14,13 +14,11 @@ export default class VillageGameObject extends GameObject {
 
   constructor(scene: GameScene, 
               private readonly homePos: number,
+              x: number, faceLeft: boolean,
               private readonly villagerGroup: Phaser.Physics.Arcade.Group,
               private readonly homeCallback: (obj: CivilianGameObject) => void) {
     super(scene)
-  }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  create(x: number, faceLeft: boolean): void {
     this.sprite = this.scene.add.sprite(x, this.scene.groundPos - 48, "village")
     if (faceLeft) {
       this.sprite.setFlipX(true)
@@ -33,11 +31,11 @@ export default class VillageGameObject extends GameObject {
   update(time: number, delta: number): void {
     this.villagers.forEach(v => v.update(time, delta))
     if (this.villagers.length < this.maxVillagers && (time - this.lastSpawnTime) > this.minTimeBetweenSpawn) {
-      const villager = new CivilianGameObject(this.scene, this.homePos, v => {
-        this.villagers = this.villagers.filter(i => i != v)
-        this.homeCallback(v)
-      })
-      villager.create(this._spawnX, this.villagerGroup)
+      const villager = new CivilianGameObject(this.scene, this.homePos, this._spawnX,
+        this.villagerGroup, v => {
+          this.villagers = this.villagers.filter(i => i != v)
+          this.homeCallback(v)
+        })
       villager.wander(time)
       this.villagers.push(villager)
       this.lastSpawnTime = time

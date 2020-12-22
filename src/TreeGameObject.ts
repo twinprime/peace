@@ -5,11 +5,9 @@ export default class TreeGameObject extends GameObject {
   private sprites: Phaser.GameObjects.Sprite[] = []
   private body: Phaser.Physics.Arcade.Body
 
-  constructor(readonly scene: GameScene) {
+  constructor(readonly scene: GameScene, physicsGroup: Phaser.Physics.Arcade.Group,
+              x: number, y: number, ht: number) {
     super(scene)
-  }
-
-  create(physicsGroup: Phaser.Physics.Arcade.Group, x: number, y: number, ht: number): void {
     let vPos = y - 16
 
     const htPixels = ht * 32

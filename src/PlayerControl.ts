@@ -46,39 +46,34 @@ export default class PlayerControl {
 
     let nextPos = 10 + 64
 
-    const homeBuilding = new HomeBuildingGameObject(scene)
-    homeBuilding.create(nextPos)
+    const homeBuilding = new HomeBuildingGameObject(scene, nextPos)
     nextPos += 128 + 15
 
-    const helipad = new HelipadGameObject(scene)
-    helipad.create(scene.platforms, nextPos, false)
+    const helipad = new HelipadGameObject(scene, scene.platforms, nextPos, false)
     nextPos += 64 + 15
 
-    this.factory = new FactoryGameObject(scene)
-    this.factory.create(nextPos + 128, false)
+    this.factory = new FactoryGameObject(scene, nextPos + 128, false)
     nextPos += 256 + 15
 
-    this.barrack = new BarrackGameObject(scene)
-    this.barrack.create(nextPos + 32, false)
+    this.barrack = new BarrackGameObject(scene, nextPos + 32, false)
     nextPos += 64 + 15
 
     this.liftableBodies = this.scene.physics.add.group()
     
     nextPos += 100
-    const aaGun = new AAGunGameObject(scene)
-    aaGun.create(this.liftableBodies, nextPos + 16, 3 * Math.PI / 4, false)
+    const aaGun = new AAGunGameObject(scene, this.liftableBodies, 
+      nextPos + 16, 3 * Math.PI / 4, false)
     this.aaGunObjects.push(aaGun)
     nextPos += 32 + 15
 
     nextPos += 100
-    const village = new VillageGameObject(scene, homeBuilding.entryX, this.boardableBodies,
-       v => console.log("Villager is home!"))
-    village.create(nextPos, false)
+    const village = new VillageGameObject(scene, homeBuilding.entryX, nextPos, false,
+      this.boardableBodies,
+      () => console.log("Villager is home!"))
     this.villages.push(village)
     nextPos += 128 + 15
 
-    const healthBar = new HealthBarGameObject(scene)
-    healthBar.create(10, 15, 100)
+    const healthBar = new HealthBarGameObject(scene, 10, 15, 100)
 
     let onBoardCountX = 10 + healthBar.width + 25
     const civilianIcon = CivilianGameObject.createIcon(scene, onBoardCountX, 16)
@@ -96,8 +91,7 @@ export default class PlayerControl {
     this.cashText = scene.add.text(10, healthBar.height + 20, `$${this.cash}`)
     this.cashText.setScrollFactor(0, 0)
 
-    this._chopper = new ChopperGameObject(scene)
-    this._chopper.create(helipad, this.liftableBodies, 
+    this._chopper = new ChopperGameObject(scene, helipad, this.liftableBodies, 
       helipad.center.x, helipad.center.y - 15, this.boardableBodies,
       (health) => healthBar.health = health)
     this._chopper.setBoardCallback(humans => {
@@ -120,15 +114,13 @@ export default class PlayerControl {
   }
 
   private buildTank() {
-    const tank = new TankGameObject(this.scene)
-    tank.create(this.factory.spawnX)
+    const tank = new TankGameObject(this.scene, this.factory.spawnX)
     tank.move(50, false)
     this.tankObjects.push(tank)
   }
 
   private buildSoldier() {
-    const soldier = new SoldierGameObject(this.scene)
-    soldier.create(this.barrack.spawnX, this.boardableBodies)
+    const soldier = new SoldierGameObject(this.scene, this.barrack.spawnX, this.boardableBodies)
     soldier.move(10, false)
     this.soliderObjects.push(soldier)
   }
