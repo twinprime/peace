@@ -2,6 +2,8 @@ import GameObject from "./GameObject"
 import GameScene from "./GameScene"
 
 export default class AAGunGameObject extends GameObject {
+  private static chopperWaveDistanceSq = 500*500
+
   private _angle = 0
   private lastFired = 0
   private gunSprite: Phaser.GameObjects.Sprite
@@ -40,8 +42,8 @@ export default class AAGunGameObject extends GameObject {
   update(time: number): void {
     if (this.faceLeft) {
       this.angle = Phaser.Math.Angle.BetweenPoints(this.scene.chopper.sprite, this.gunSprite)
-      const dist = Phaser.Math.Distance.BetweenPointsSquared(this.gunSprite, this.scene.chopper.sprite)
-      if (dist < 500*500) {
+      const distSq = Phaser.Math.Distance.BetweenPointsSquared(this.gunSprite, this.scene.chopper.sprite)
+      if (distSq < AAGunGameObject.chopperWaveDistanceSq) {
         if ((time - this.lastFired) > 1000) {
           this.lastFired = time
           const dir = new Phaser.Math.Vector2(

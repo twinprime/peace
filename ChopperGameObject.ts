@@ -19,7 +19,10 @@ export default class ChopperGameObject extends GameObject implements HumanBoarda
   private keys: Record<"W"|"S"|"A"|"D"|"SPACE", Phaser.Input.Keyboard.Key>
 
   private helipad: HelipadGameObject
-  private onGround = false
+
+  private _onGround = false
+  get onGround(): boolean { return this._onGround }
+  
   private onPad = false
 
   private ropeObject: Phaser.GameObjects.Rectangle
@@ -50,7 +53,7 @@ export default class ChopperGameObject extends GameObject implements HumanBoarda
 
   board(human: HumanGameObject): boolean {
     const time = Date.now()
-    if (this.onGround && (time - this.lastBoardTime) > this.perBoardingTime &&
+    if (this._onGround && (time - this.lastBoardTime) > this.perBoardingTime &&
         this.countHumansOnBoard() < this.maxHumans) {
       this.lastBoardTime = time
       this.addHumansOnBoard(human)
@@ -160,7 +163,7 @@ export default class ChopperGameObject extends GameObject implements HumanBoarda
       }
     } else this.body.setAccelerationX(0)
 
-    this.onGround = false
+    this._onGround = false
 
     let onPad = false
 
@@ -169,7 +172,7 @@ export default class ChopperGameObject extends GameObject implements HumanBoarda
 
       if (this.facing == 0) {
         if (this.body.y == (this.scene.groundPos - 32)) {
-          this.onGround = true
+          this._onGround = true
         } else if ((this.body.x + 32) >= this.helipad.minX && 
                    (this.body.x + 32) <= this.helipad.maxX && 
                    this.body.y == (this.scene.groundPos - 32 - this.helipad.ht)) {
@@ -189,12 +192,12 @@ export default class ChopperGameObject extends GameObject implements HumanBoarda
   }
 
   private updateOnBoard(time: number) {
-    if ((this.onGround || this.onPad) && !this.liftedObject && this.keys.SPACE.isDown &&
+    if ((this._onGround || this.onPad) && !this.liftedObject && this.keys.SPACE.isDown &&
         this.ropeVelocity == 0 && this.ropeLength == 0) {
       if ((time - this.lastDisembarkTime) >= this.perBoardingTime) {
         let h: HumanGameObject = undefined
         let dir = 1
-        if (this.onGround) {
+        if (this._onGround) {
           const humans = this._humansOnBoard.get(SoldierGameObject.TYPE)
           if (humans) h = humans.pop()
         } else if (this.onPad) {
@@ -213,7 +216,7 @@ export default class ChopperGameObject extends GameObject implements HumanBoarda
   }
 
   private updateRope(delta: number) {
-    if (!this.onGround && !this.onPad && !this.justLiftedObject && this.keys.SPACE.isDown) {
+    if (!this._onGround && !this.onPad && !this.justLiftedObject && this.keys.SPACE.isDown) {
       if (!this.liftedObject && this.ropeVelocity == 0 && this.facing == 0) {
         this.ropeVelocity = 64
       } else if (this.liftedObject) {

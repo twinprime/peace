@@ -72,7 +72,7 @@ export default class HumanGameObject extends GameObject {
     this.sprite.setY(y)
   }
 
-  move(velocityX: number, faceLeft: boolean): void {
+  move(velocityX: number, faceLeft = false): void {
     const body = this.sprite.body as Phaser.Physics.Arcade.Body
     body.setVelocityX(velocityX)
 

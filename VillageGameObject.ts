@@ -38,7 +38,7 @@ export default class VillageGameObject extends GameObject {
         this.homeCallback(v)
       })
       villager.create(this._spawnX, this.villagerGroup)
-      villager.move(-10, true)
+      villager.wander(time)
       this.villagers.push(villager)
       this.lastSpawnTime = time
     }
