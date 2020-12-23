@@ -21,12 +21,12 @@ export default class CivilianGameObject extends HumanGameObject {
   private lastLookForChopper = 0
   private lastStateChange = 0
 
-  constructor(readonly scene: GameScene,
+  constructor(readonly scene: GameScene, owner: number,
               private readonly homePos: number,
               private readonly spawnPos: number, 
               boardableObjectGroup: Phaser.Physics.Arcade.Group,
               private readonly homeCallback: (obj: CivilianGameObject) => void) {
-    super(CivilianGameObject.TYPE, scene, {
+    super(CivilianGameObject.TYPE, scene, owner, {
       spriteImage: "civilian",
       animWalk: "civilian-walk",
       animDie: "civilian-die",

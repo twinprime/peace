@@ -7,7 +7,7 @@ export default class BirdGameObject extends GameObject {
   get sprite(): Phaser.GameObjects.Sprite { return this._sprite }
 
   constructor(readonly scene: GameScene) {
-    super(scene)
+    super(scene, 0)
   }
 
   preload(): void {

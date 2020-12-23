@@ -4,12 +4,12 @@ import BarrackGameObject from './BarrackGameObject'
 import BulletGameObject from './BulletGameObject'
 import ChopperGameObject from './ChopperGameObject'
 import CivilianGameObject from './CivilianGameObject'
-import EnemyControl from './EnemyControl'
+import RedForceControl from './RedForceControl'
 import FactoryGameObject from './FactoryGameObject'
 import GroundGameObject from './GroundGameObject'
 import HelipadGameObject from './HelipadGameObject'
 import HomeBuildingGameObject from './HomeBuildingGameObject'
-import PlayerControl from './PlayerControl'
+import BlueForceControl from './BlueForceControl'
 import SoldierGameObject from './SoldierGameObject'
 import TankGameObject from './TankGameObject'
 import TreeGameObject from './TreeGameObject'
@@ -20,17 +20,15 @@ export default class GameScene extends Phaser.Scene {
   private ground: GroundGameObject
   private treeObjects: TreeGameObject[] = []
   private bulletObjects = new Map<Phaser.GameObjects.GameObject, BulletGameObject>()
-  private playerControl: PlayerControl
-  private enemeyControl: EnemyControl
+  private bulletBodies = new Map<number, Phaser.Physics.Arcade.Group>()
+  private playerControl: BlueForceControl
+  private enemeyControl: RedForceControl
 
   private _platformBodies: Phaser.Physics.Arcade.StaticGroup
   get platforms(): Phaser.Physics.Arcade.StaticGroup { return this._platformBodies }
 
   private _treeBodies: Phaser.Physics.Arcade.Group
   get trees(): Phaser.Physics.Arcade.Group { return this._treeBodies }
-
-  private _bulletBodies: Phaser.Physics.Arcade.Group
-  get bullets(): Phaser.Physics.Arcade.Group { return this._bulletBodies }
 
   private _groundPos: number
   get groundPos(): number { return this._groundPos }
@@ -92,20 +90,21 @@ export default class GameScene extends Phaser.Scene {
     const tree = new TreeGameObject(this, this._treeBodies, 700, this._groundPos, 3)
     this.treeObjects.push(tree)
 
-    this._bulletBodies = this.physics.add.group()
+    this.bulletBodies.set(-1, this.physics.add.group())
+    this.bulletBodies.set(1, this.physics.add.group())
 
     HelipadGameObject.createCommon(this)
     SoldierGameObject.createCommon(this)
     CivilianGameObject.createCommon(this)
-    this.playerControl = new PlayerControl(this)
-    this.enemeyControl = new EnemyControl(this)
+    this.playerControl = new BlueForceControl(this)
+    this.enemeyControl = new RedForceControl(this)
 
     this.cameras.main.setBounds(0, 0, this.worldWidth, this.worldHeight)
     this.cameras.main.startFollow(this.playerControl.chopper.sprite)
   }
 
-  createBullet(x: number, y: number, velocityX: number, velocityY: number): BulletGameObject {
-    const bullet = new BulletGameObject(this, this._bulletBodies, x, y, velocityX, velocityY)
+  createBullet(owner: number, x: number, y: number, velocityX: number, velocityY: number): BulletGameObject {
+    const bullet = new BulletGameObject(this, owner, this.bulletBodies.get(owner), x, y, velocityX, velocityY)
     this.bulletObjects.set(bullet.sprite, bullet)
     return bullet
   }
@@ -117,6 +116,8 @@ export default class GameScene extends Phaser.Scene {
       bullet.remove()
     }
   }
+
+  getBulletBodies(owner: number): Phaser.Physics.Arcade.Group { return this.bulletBodies.get(owner) }
   
   update(time: number, delta: number): void {
     this.frameTime += delta

@@ -12,9 +12,12 @@ import SoldierGameObject from "./SoldierGameObject"
 import TankGameObject from "./TankGameObject"
 import VillageGameObject from "./VillageGameObject"
 
-export default class PlayerControl {
+export default class BlueForceControl {
   private scene: GameScene
   private cash = 1000
+  private cashDelta = 100
+  private cashUpdateInterval = 5000
+  private lastCashUpdate = 0
   private cashText: Phaser.GameObjects.Text
   private factory: FactoryGameObject
   private barrack: BarrackGameObject
@@ -46,30 +49,32 @@ export default class PlayerControl {
 
     let nextPos = 10 + 64
 
-    const homeBuilding = new HomeBuildingGameObject(scene, nextPos)
+    const homeBuilding = new HomeBuildingGameObject(scene, 1, nextPos)
     nextPos += 128 + 15
 
-    const helipad = new HelipadGameObject(scene, scene.platforms, nextPos, false)
+    const helipad = new HelipadGameObject(scene, 1, scene.platforms, nextPos, false)
     nextPos += 64 + 15
 
-    this.factory = new FactoryGameObject(scene, nextPos + 128, false)
+    this.factory = new FactoryGameObject(scene, 1, nextPos + 128, false)
     nextPos += 256 + 15
 
-    this.barrack = new BarrackGameObject(scene, nextPos + 32, false)
+    this.barrack = new BarrackGameObject(scene, 1, nextPos + 32)
     nextPos += 64 + 15
 
     this.liftableBodies = this.scene.physics.add.group()
     
     nextPos += 100
-    const aaGun = new AAGunGameObject(scene, this.liftableBodies, 
-      nextPos + 16, 3 * Math.PI / 4, false)
+    const aaGun = new AAGunGameObject(scene, 1, this.liftableBodies, 
+      nextPos + 16, 3 * Math.PI / 4)
     this.aaGunObjects.push(aaGun)
     nextPos += 32 + 15
 
     nextPos += 100
-    const village = new VillageGameObject(scene, homeBuilding.entryX, nextPos, false,
-      this.boardableBodies,
-      () => console.log("Villager is home!"))
+    const village = new VillageGameObject(scene, 1, homeBuilding.entryX, nextPos, false,
+      this.boardableBodies, () => {
+        this.cashDelta += 100
+        this.adjustCash(0)
+      })
     this.villages.push(village)
     nextPos += 128 + 15
 
@@ -88,10 +93,10 @@ export default class PlayerControl {
     const soldierOnBoardCountText = scene.add.text(onBoardCountX, 10, "0")
     soldierOnBoardCountText.setScrollFactor(0, 0)
 
-    this.cashText = scene.add.text(10, healthBar.height + 20, `$${this.cash}`)
+    this.cashText = scene.add.text(10, healthBar.height + 20, `$${this.cash} +$${this.cashDelta}`)
     this.cashText.setScrollFactor(0, 0)
 
-    this._chopper = new ChopperGameObject(scene, helipad, this.liftableBodies, 
+    this._chopper = new ChopperGameObject(scene, 1, helipad, this.liftableBodies, 
       helipad.center.x, helipad.center.y - 15, this.boardableBodies,
       (health) => healthBar.health = health)
     this._chopper.setBoardCallback(humans => {
@@ -106,21 +111,25 @@ export default class PlayerControl {
     this.villages.forEach(v => v.update(time, delta))
     this.aaGunObjects.forEach(gun => gun.update(time))
     this.soliderObjects.forEach(soldier => soldier.update(time, delta))
+    if ((time - this.lastCashUpdate) >= this.cashUpdateInterval) {
+      this.adjustCash(this.cashDelta)
+      this.lastCashUpdate = time
+    }
   }
 
   private adjustCash(amt: number) {
     this.cash += amt
-    this.cashText.setText(`$${this.cash}`)
+    this.cashText.setText(`$${this.cash} +$${this.cashDelta}`)
   }
 
   private buildTank() {
-    const tank = new TankGameObject(this.scene, this.factory.spawnX)
+    const tank = new TankGameObject(this.scene, 1, this.factory.spawnX)
     tank.move(50, false)
     this.tankObjects.push(tank)
   }
 
   private buildSoldier() {
-    const soldier = new SoldierGameObject(this.scene, this.barrack.spawnX, this.boardableBodies)
+    const soldier = new SoldierGameObject(this.scene, 1, this.barrack.spawnX, this.boardableBodies)
     soldier.move(10, false)
     this.soliderObjects.push(soldier)
   }

@@ -43,10 +43,11 @@ export default class ChopperGameObject extends GameObject implements HumanBoarda
     return this.bodySprite
   }
 
-  constructor(scene: GameScene, helipad: HelipadGameObject, liftableBodies: Phaser.Physics.Arcade.Group, 
+  constructor(scene: GameScene, owner: number, 
+              helipad: HelipadGameObject, liftableBodies: Phaser.Physics.Arcade.Group, 
               x: number, y: number, physiscsGroup: Phaser.Physics.Arcade.Group,
               healthCallback: ((health: number) => void)) {
-    super(scene)
+    super(scene, owner)
     this.keys = this.scene.input.keyboard.addKeys("W,S,A,D,SPACE") as 
       Record<"W"|"S"|"A"|"D"|"SPACE", Phaser.Input.Keyboard.Key>
     this.helipad = helipad
@@ -69,7 +70,8 @@ export default class ChopperGameObject extends GameObject implements HumanBoarda
 
     this.healthCallback = healthCallback
 
-    this.scene.physics.add.overlap(this.bodySprite, this.scene.bullets, (me, bullet) => {
+    this.scene.physics.add.overlap(this.bodySprite, 
+      this.scene.getBulletBodies(this.owner * -1), (me, bullet) => {
       this.scene.removeBullet(bullet)
       this.health -= 10
       if (this.health < 0) this.health = 0

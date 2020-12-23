@@ -5,11 +5,11 @@ export default class TankGameObject extends GameObject {
   private readonly sprite: Phaser.Physics.Arcade.Sprite
   private faceLeft: boolean
 
-  constructor(scene: GameScene, x: number) {
-    super(scene)
+  constructor(scene: GameScene, owner: number, x: number) {
+    super(scene, owner)
     
-    this.sprite = this.scene.physics.add.sprite(x, this.scene.groundPos - 28, "tank")
-    this.sprite.setScale(0.7, 0.7)
+    this.sprite = this.scene.physics.add.sprite(x, this.scene.groundPos - 20, "tank")
+    this.sprite.setScale(0.5, 0.5)
     this.sprite.setDepth(1)
     const body = this.sprite.body as Phaser.Physics.Arcade.Body
     body.setAllowGravity(false)

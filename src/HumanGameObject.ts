@@ -7,7 +7,8 @@ export default class HumanGameObject extends GameObject {
   private readonly spriteHalfHt: number
 
   constructor(readonly type: string,
-              readonly scene: GameScene, 
+              readonly scene: GameScene,
+              owner: number,
               private readonly config: {
                 spriteImage: string,
                 bodyOffsetX?: number,
@@ -21,7 +22,7 @@ export default class HumanGameObject extends GameObject {
                 defaultFaceLeft: boolean
               },
               x: number, boardableObjectGroup?: Phaser.Physics.Arcade.Group) {
-    super(scene)
+    super(scene, owner)
     this.spriteHalfHt = this.config.spriteHt * this.config.spriteScale / 2
     this.sprite = this.scene.physics.add.sprite(x, this.scene.groundPos - this.spriteHalfHt, this.config.spriteImage, 0)
     this.sprite.setScale(this.config.spriteScale, this.config.spriteScale)

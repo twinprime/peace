@@ -7,8 +7,8 @@ export default class FactoryGameObject extends GameObject {
   private readonly _spawnX: number
   get spawnX(): number { return this._spawnX }
 
-  constructor(scene: GameScene, x: number, faceLeft: boolean) {
-    super(scene)
+  constructor(scene: GameScene, owner: number, x: number, faceLeft: boolean) {
+    super(scene, owner)
     
     this.sprite = this.scene.add.sprite(x, this.scene.groundPos - 64, "factory")
     if (!faceLeft) {

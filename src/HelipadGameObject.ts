@@ -12,10 +12,10 @@ export default class HelipadGameObject extends GameObject {
   get maxX(): number { return this._center.x + 60 }
   get ht(): number { return 3 }
 
-  constructor(scene: GameScene, physicsGroup: Phaser.Physics.Arcade.StaticGroup, 
+  constructor(scene: GameScene, owner: number, physicsGroup: Phaser.Physics.Arcade.StaticGroup, 
               // eslint-disable-next-line @typescript-eslint/no-unused-vars
               x: number, faceLeft: boolean) {
-    super(scene)
+    super(scene, owner)
 
     this.sprite = this.scene.add.sprite(x, this.scene.groundPos - 8, "helipad", 0)
     const bodyRect = this.scene.add.rectangle(x, this.scene.groundPos - 2, 128, 2, 0)

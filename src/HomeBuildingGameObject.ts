@@ -5,8 +5,8 @@ export default class HomeBuildingGameObject extends GameObject {
   private readonly _entryX: number
   get entryX(): number { return this._entryX }
 
-  constructor(scene: GameScene, x: number) {
-    super(scene)
+  constructor(scene: GameScene, owner: number, x: number) {
+    super(scene, owner)
     
     this.scene.add.sprite(x, this.scene.groundPos - 64, "home")
     this._entryX = x + 48

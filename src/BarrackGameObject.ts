@@ -8,8 +8,8 @@ export default class BarrackGameObject extends GameObject {
   get spawnX(): number { return this._spawnX }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  constructor(scene: GameScene, x: number, faceLeft: boolean) {
-    super(scene)
+  constructor(scene: GameScene, owner: number, x: number) {
+    super(scene, owner)
     this.sprite = this.scene.add.sprite(x, this.scene.groundPos - 32, "barrack")
     this.sprite.setScale(0.5, 0.5)
     this._spawnX = x

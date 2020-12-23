@@ -13,7 +13,7 @@ export default class HealthBarGameObject extends GameObject {
   get height(): number { return this._height }
   
   constructor(scene: GameScene, x: number, y: number, health: number) {
-    super(scene)
+    super(scene, 0)
     
     this.x = x
     this.y = y

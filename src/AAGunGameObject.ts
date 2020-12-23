@@ -11,20 +11,20 @@ export default class AAGunGameObject extends GameObject {
   private faceLeft: boolean
   private maxY: number
 
-  constructor(scene: GameScene, physicsGroup: Phaser.Physics.Arcade.Group, 
-              x: number, angle: number, faceLeft: boolean) {
-    super(scene)
+  constructor(scene: GameScene, owner: number, physicsGroup: Phaser.Physics.Arcade.Group, 
+              x: number, angle: number) {
+    super(scene, owner)
 
-    this.faceLeft = faceLeft
+    this.faceLeft = owner < 0
     this.maxY = this.scene.groundPos - 16
 
-    this.gunSprite = this.scene.add.sprite(x + (faceLeft ? 8 : -8), this.maxY, "aa-gun", 1)
+    this.gunSprite = this.scene.add.sprite(x + (this.faceLeft ? 8 : -8), this.maxY, "aa-gun", 1)
     this.gunSprite.setDepth(10)
     this.angle = angle
 
     this.bodySprite = this.scene.physics.add.sprite(x, this.maxY, "aa-gun", 0)
     this.bodySprite.setDepth(10)
-    if (!faceLeft) this.bodySprite.setFlipX(true)
+    if (!this.faceLeft) this.bodySprite.setFlipX(true)
     physicsGroup.add(this.bodySprite)
     const body = this.bodySprite.body as Phaser.Physics.Arcade.Body
     body.setAllowGravity(false)
@@ -48,7 +48,7 @@ export default class AAGunGameObject extends GameObject {
           const dir = new Phaser.Math.Vector2(
             this.scene.chopper.sprite.x - this.gunSprite.x,
             this.scene.chopper.sprite.y - this.gunSprite.y).normalize()
-          this.scene.createBullet(this.gunSprite.x + dir.x * 16, 
+          this.scene.createBullet(this.owner, this.gunSprite.x + dir.x * 16, 
             this.gunSprite.y + dir.y * 16,
             dir.x * 100, dir.y * 100)
         }

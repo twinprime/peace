@@ -7,7 +7,7 @@ export default class TreeGameObject extends GameObject {
 
   constructor(readonly scene: GameScene, physicsGroup: Phaser.Physics.Arcade.Group,
               x: number, y: number, ht: number) {
-    super(scene)
+    super(scene, 0)
     let vPos = y - 16
 
     const htPixels = ht * 32
