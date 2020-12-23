@@ -1,7 +1,7 @@
-import GameObject from "./GameObject"
 import GameScene from "./GameScene"
+import PhysicsBodyGameObject from "./PhysicsBodyGameObject"
 
-export default class BulletGameObject extends GameObject {
+export default class BulletGameObject extends PhysicsBodyGameObject {
   private readonly _sprite: Phaser.GameObjects.Sprite
 
   get sprite(): Phaser.GameObjects.Sprite { return this._sprite }
@@ -17,6 +17,8 @@ export default class BulletGameObject extends GameObject {
     const body = this._sprite.body as Phaser.Physics.Arcade.Body
     body.setAllowGravity(false)
     body.setVelocity(velocityX, velocityY)
+
+    this.mainBody = body
   }
 
   remove(): void {

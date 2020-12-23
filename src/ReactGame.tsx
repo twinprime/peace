@@ -24,13 +24,13 @@ export class ReactGame extends React.Component {
         default: 'arcade',
         arcade: {
           gravity: { y: 300 },
-          debug: true,
+          debug: false,
         },
       },
       
       parent: 'game',
       backgroundColor: '#000000',
-      scene: new GameScene(800 * 3, 600),
+      scene: new GameScene(1068 * 5, 600),
     })
   }
 }

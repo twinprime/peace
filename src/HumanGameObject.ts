@@ -1,8 +1,8 @@
-import GameObject from "./GameObject"
 import GameScene from "./GameScene"
 import HumanBoardable from "./HumanBoardable"
+import PhysicsBodyGameObject from "./PhysicsBodyGameObject"
 
-export default class HumanGameObject extends GameObject {
+export default class HumanGameObject extends PhysicsBodyGameObject {
   protected readonly sprite: Phaser.Physics.Arcade.Sprite
   private readonly spriteHalfHt: number
 
@@ -35,6 +35,7 @@ export default class HumanGameObject extends GameObject {
     if (this.config.bodyWidth) {
       body.setSize(this.config.bodyWidth, this.config.bodyHeight, false)
     }
+    this.mainBody = body
 
     if (boardableObjectGroup) {
       this.scene.physics.add.overlap(this.sprite, boardableObjectGroup, (me, other) => {
@@ -45,10 +46,6 @@ export default class HumanGameObject extends GameObject {
         }
       })
     }
-  }
-
-  get width(): number { 
-    return (this.sprite.body as Phaser.Physics.Arcade.Body).width 
   }
 
   get walkSpeed(): number { return 10 }

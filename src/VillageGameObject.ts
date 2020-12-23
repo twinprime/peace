@@ -1,9 +1,8 @@
 import CivilianGameObject from "./CivilianGameObject"
-import GameObject from "./GameObject"
 import GameScene from "./GameScene"
+import SpriteGameObject from "./SpriteGameObject"
 
-export default class VillageGameObject extends GameObject {
-  private readonly sprite: Phaser.GameObjects.Sprite
+export default class VillageGameObject extends SpriteGameObject {
   private villagers: CivilianGameObject[] = []
   private readonly maxVillagers = 3
   private readonly minTimeBetweenSpawn = 5000
@@ -19,9 +18,9 @@ export default class VillageGameObject extends GameObject {
               private readonly homeCallback: (obj: CivilianGameObject) => void) {
     super(scene, owner)
 
-    this.sprite = this.scene.add.sprite(x, this.scene.groundPos - 48, "village")
+    this.mainSprite = this.scene.add.sprite(x, this.scene.groundPos - 48, "village")
     if (faceLeft) {
-      this.sprite.setFlipX(true)
+      this.mainSprite.setFlipX(true)
       this._spawnX = x + 32
     } else {
       this._spawnX = x - 32

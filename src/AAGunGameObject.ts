@@ -1,7 +1,7 @@
-import GameObject from "./GameObject"
 import GameScene from "./GameScene"
+import PhysicsBodyGameObject from "./PhysicsBodyGameObject"
 
-export default class AAGunGameObject extends GameObject {
+export default class AAGunGameObject extends PhysicsBodyGameObject {
   private static chopperWaveDistanceSq = 500*500
 
   private _angle = 0
@@ -29,6 +29,8 @@ export default class AAGunGameObject extends GameObject {
     const body = this.bodySprite.body as Phaser.Physics.Arcade.Body
     body.setAllowGravity(false)
     this.addWrapperProperty(this.bodySprite)
+
+    this.mainBody = body
   }
 
   moveTo(x: number, y: number): void {

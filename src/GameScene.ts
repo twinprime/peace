@@ -14,6 +14,7 @@ import SoldierGameObject from './SoldierGameObject'
 import TankGameObject from './TankGameObject'
 import TreeGameObject from './TreeGameObject'
 import VillageGameObject from './VillageGameObject'
+import GameObject from './GameObject'
 
 export default class GameScene extends Phaser.Scene {
   private frameTime = 0
@@ -23,6 +24,7 @@ export default class GameScene extends Phaser.Scene {
   private bulletBodies = new Map<number, Phaser.Physics.Arcade.Group>()
   private playerControl: BlueForceControl
   private enemeyControl: RedForceControl
+  private gameObjects = new Map<number, Map<number, GameObject>>()
 
   private _platformBodies: Phaser.Physics.Arcade.StaticGroup
   get platforms(): Phaser.Physics.Arcade.StaticGroup { return this._platformBodies }
@@ -41,6 +43,8 @@ export default class GameScene extends Phaser.Scene {
       visible: false,
       key: 'Game',
     })
+    this.gameObjects.set(-1, new Map())
+    this.gameObjects.set(1, new Map())
   }
 
   init(): void {
@@ -87,8 +91,14 @@ export default class GameScene extends Phaser.Scene {
     this._groundPos = this.sys.game.scale.gameSize.height - 32
 
     this._treeBodies = this.physics.add.group()
-    const tree = new TreeGameObject(this, this._treeBodies, 700, this._groundPos, 3)
-    this.treeObjects.push(tree)
+    let treeX = 700
+    const treeXMax = this.worldWidth - 700
+    while(treeX <= treeXMax) {
+      const ht = Math.floor(3 + Math.random() * 5)
+      const tree = new TreeGameObject(this, this._treeBodies, treeX, this._groundPos, ht)
+      this.treeObjects.push(tree)
+      treeX += Math.max(200, 100 + Math.floor(Math.random() * 400))
+    }
 
     this.bulletBodies.set(-1, this.physics.add.group())
     this.bulletBodies.set(1, this.physics.add.group())

@@ -1,7 +1,7 @@
-import GameObject from "./GameObject"
 import GameScene from "./GameScene"
+import PhysicsBodyGameObject from "./PhysicsBodyGameObject"
 
-export default class TankGameObject extends GameObject {
+export default class TankGameObject extends PhysicsBodyGameObject {
   private readonly sprite: Phaser.Physics.Arcade.Sprite
   private faceLeft: boolean
 
@@ -13,6 +13,7 @@ export default class TankGameObject extends GameObject {
     this.sprite.setDepth(1)
     const body = this.sprite.body as Phaser.Physics.Arcade.Body
     body.setAllowGravity(false)
+    this.mainBody = body
   }
 
   move(velocityX: number, faceLeft: boolean): void {

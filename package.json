@@ -11,12 +11,13 @@
     "esw": "esw -w --ext .js,.jsx,.ts,.tsx",
     "parcel": "parcel index.html",
     "dev": "concurrently --raw npm:tsc npm:lint npm:parcel",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "test-watch": "jest --watch"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/jest": "^26.0.16",
+    "@types/jest": "^26.0.19",
     "@types/node": "^14.14.10",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
@@ -28,6 +29,7 @@
     "jest": "^26.6.3",
     "parcel-plugin-static-files-copy": "^2.5.0",
     "sass": "^1.30.0",
+    "ts-jest": "^26.4.4",
     "typescript": "^4.1.2"
   },
   "dependencies": {

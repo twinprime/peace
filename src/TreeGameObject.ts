@@ -1,9 +1,8 @@
-import GameObject from "./GameObject"
 import GameScene from "./GameScene"
+import PhysicsBodyGameObject from "./PhysicsBodyGameObject"
 
-export default class TreeGameObject extends GameObject {
+export default class TreeGameObject extends PhysicsBodyGameObject {
   private readonly sprites: Phaser.GameObjects.Sprite[] = []
-  private readonly body: Phaser.Physics.Arcade.Body
 
   constructor(readonly scene: GameScene, physicsGroup: Phaser.Physics.Arcade.Group,
               x: number, y: number, ht: number) {
@@ -14,10 +13,9 @@ export default class TreeGameObject extends GameObject {
     const bodyRect = this.scene.add.rectangle(x, y - htPixels / 2, 32, htPixels, 0)
     bodyRect.setVisible(false)
     physicsGroup.add(bodyRect)
-    this.body = bodyRect.body as Phaser.Physics.Arcade.Body
-    this.body.allowGravity = false
-    this.body.immovable = true
-    // this.body.setVelocityX(5)
+    this.mainBody = bodyRect.body as Phaser.Physics.Arcade.Body
+    this.mainBody.allowGravity = false
+    this.mainBody.immovable = true
 
     const bottom = this.scene.add.sprite(x, vPos, "nature", 37)
     bottom.setScale(2)
@@ -35,8 +33,8 @@ export default class TreeGameObject extends GameObject {
   }
 
   update(): void {
-    const x = this.body.position.x + 16
-    let y = this.body.position.y + this.body.height - 16
+    const x = this.mainBody.position.x + 16
+    let y = this.mainBody.position.y + this.mainBody.height - 16
     this.sprites.forEach(sprite => {
       sprite.setX(x)
       sprite.setY(y)

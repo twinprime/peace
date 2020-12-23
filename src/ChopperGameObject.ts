@@ -4,10 +4,10 @@ import GameScene from "./GameScene"
 import HelipadGameObject from "./HelipadGameObject"
 import HumanBoardable from "./HumanBoardable"
 import HumanGameObject from "./HumanGameObject"
+import PhysicsBodyGameObject from "./PhysicsBodyGameObject"
 import SoldierGameObject from "./SoldierGameObject"
 
-export default class ChopperGameObject extends GameObject implements HumanBoardable {
-  private readonly body: Phaser.Physics.Arcade.Body
+export default class ChopperGameObject extends PhysicsBodyGameObject implements HumanBoardable {
   private readonly tailSprite: Phaser.GameObjects.Sprite
   private readonly bodySprite: Phaser.GameObjects.Sprite
   private readonly spriteGp: Phaser.GameObjects.Group
@@ -56,11 +56,11 @@ export default class ChopperGameObject extends GameObject implements HumanBoarda
     this.bodySprite = this.spriteGp.create(x, y, "chopper", 0) as Phaser.GameObjects.Sprite
     this.bodySprite.setDepth(100)
     physiscsGroup.add(this.bodySprite)
-    this.body = this.bodySprite.body as Phaser.Physics.Arcade.Body
-    this.body.setCollideWorldBounds(true)
-    this.body.setAllowGravity(false)
-    this.body.useDamping = true
-    this.body.setDrag(0.9, 0.9)
+    this.mainBody = this.bodySprite.body as Phaser.Physics.Arcade.Body
+    this.mainBody.setCollideWorldBounds(true)
+    this.mainBody.setAllowGravity(false)
+    this.mainBody.useDamping = true
+    this.mainBody.setDrag(0.9, 0.9)
     this.scene.physics.add.collider(this.bodySprite, this.scene.platforms)
     this.addWrapperProperty(this.bodySprite)
     
@@ -133,48 +133,48 @@ export default class ChopperGameObject extends GameObject implements HumanBoarda
     this.updateTailPosition()
 
     if (this.keys.S.isDown) {
-      if (this.body.velocity.y < this.maxSpeed) {
-        this.body.setAccelerationY(this.acceleration)
+      if (this.mainBody.velocity.y < this.maxSpeed) {
+        this.mainBody.setAccelerationY(this.acceleration)
       } else {
-        this.body.setAccelerationY(0)
+        this.mainBody.setAccelerationY(0)
       }
     } else if (this.keys.W.isDown) {
-      if (this.body.velocity.y > -this.maxSpeed) {
-        this.body.setAccelerationY(-this.acceleration)
+      if (this.mainBody.velocity.y > -this.maxSpeed) {
+        this.mainBody.setAccelerationY(-this.acceleration)
       } else {
-        this.body.setAccelerationY(0)
+        this.mainBody.setAccelerationY(0)
       }
-    } else this.body.setAccelerationY(0)
+    } else this.mainBody.setAccelerationY(0)
 
     if (this.keys.D.isDown) {
       this.changeFacing(1)
-      if (this.body.velocity.x < this.maxSpeed) {
-        this.body.setAccelerationX(this.acceleration)
+      if (this.mainBody.velocity.x < this.maxSpeed) {
+        this.mainBody.setAccelerationX(this.acceleration)
       } else {
-        this.body.setAccelerationX(0)
+        this.mainBody.setAccelerationX(0)
       }
     } else if (this.keys.A.isDown) {
       this.changeFacing(-1)
-      if (this.body.velocity.x > -this.maxSpeed) {
-        this.body.setAccelerationX(-this.acceleration)
+      if (this.mainBody.velocity.x > -this.maxSpeed) {
+        this.mainBody.setAccelerationX(-this.acceleration)
       } else {
-        this.body.setAccelerationX(0)
+        this.mainBody.setAccelerationX(0)
       }
-    } else this.body.setAccelerationX(0)
+    } else this.mainBody.setAccelerationX(0)
 
     this._onGround = false
 
     let onPad = false
 
-    if (this.body.acceleration.x == 0) {
-      if (this.facing != 0 && Math.abs(this.body.velocity.x) < 2) this.changeFacing(0)
+    if (this.mainBody.acceleration.x == 0) {
+      if (this.facing != 0 && Math.abs(this.mainBody.velocity.x) < 2) this.changeFacing(0)
 
       if (this.facing == 0) {
-        if (this.body.y == (this.scene.groundPos - 32)) {
+        if (this.mainBody.y == (this.scene.groundPos - 32)) {
           this._onGround = true
-        } else if ((this.body.x + 32) >= this.helipad.minX && 
-                   (this.body.x + 32) <= this.helipad.maxX && 
-                   this.body.y == (this.scene.groundPos - 32 - this.helipad.ht)) {
+        } else if ((this.mainBody.x + 32) >= this.helipad.minX && 
+                   (this.mainBody.x + 32) <= this.helipad.maxX && 
+                   this.mainBody.y == (this.scene.groundPos - 32 - this.helipad.ht)) {
           onPad = true
         }
       }
@@ -207,7 +207,7 @@ export default class ChopperGameObject extends GameObject implements HumanBoarda
         if (h) {
           this.lastDisembarkTime = time
           const xAdj = dir > 0 ? (32 + h.width / 2 + 2) : (-h.width/2 - 2)
-          h.disembark(this.body.x + xAdj, h.walkSpeed * dir)
+          h.disembark(this.mainBody.x + xAdj, h.walkSpeed * dir)
           this.boardCallback(this._humansOnBoard)
         }
       }
@@ -241,13 +241,13 @@ export default class ChopperGameObject extends GameObject implements HumanBoarda
       }
     }
 
-    const ropeEnd = this.body.y + 16 + this.ropeLength
+    const ropeEnd = this.mainBody.y + 16 + this.ropeLength
     if (ropeEnd > this.scene.groundPos) {
-      this.ropeObject.displayHeight = this.scene.groundPos - this.body.y - 16
+      this.ropeObject.displayHeight = this.scene.groundPos - this.mainBody.y - 16
     } else this.ropeObject.displayHeight = this.ropeLength
 
-    this.ropeObject.setX(this.body.x + 16)
-    this.ropeObject.setY(this.body.y + 16 + this.ropeObject.displayHeight / 2)
+    this.ropeObject.setX(this.mainBody.x + 16)
+    this.ropeObject.setY(this.mainBody.y + 16 + this.ropeObject.displayHeight / 2)
 
     if (this.liftedObject) {
       const ropeEnd = this.ropeObject.getBottomCenter()
@@ -284,8 +284,8 @@ export default class ChopperGameObject extends GameObject implements HumanBoarda
   private updateTailPosition() {
     if (this.facing != 0) {
       // 3 and 13 are adjustments for the rotation of the body
-      this.tailSprite.setX(this.body.x + 16 - (32 - 3) * this.facing)
-      this.tailSprite.setY(this.body.y + 16 - 13)
+      this.tailSprite.setX(this.mainBody.x + 16 - (32 - 3) * this.facing)
+      this.tailSprite.setY(this.mainBody.y + 16 - 13)
     }
   }
 

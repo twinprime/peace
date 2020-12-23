@@ -1,9 +1,8 @@
-import GameObject from "./GameObject"
 import GameScene from "./GameScene"
+import PhysicsBodyGameObject from "./PhysicsBodyGameObject"
 
-export default class HelipadGameObject extends GameObject {
+export default class HelipadGameObject extends PhysicsBodyGameObject {
   private readonly sprite: Phaser.GameObjects.Sprite
-  private readonly body: Phaser.Physics.Arcade.Body
 
   private readonly _center: Phaser.Math.Vector2
   get center(): Phaser.Math.Vector2 { return this._center }
@@ -21,9 +20,9 @@ export default class HelipadGameObject extends GameObject {
     const bodyRect = this.scene.add.rectangle(x, this.scene.groundPos - 2, 128, 2, 0)
     bodyRect.setVisible(false)
     physicsGroup.add(bodyRect)
-    this.body = bodyRect.body as Phaser.Physics.Arcade.Body
-    this.body.allowGravity = false
-    this.body.immovable = true
+    this.mainBody = bodyRect.body as Phaser.Physics.Arcade.Body
+    this.mainBody.allowGravity = false
+    this.mainBody.immovable = true
     this._center = new Phaser.Math.Vector2(x, this.scene.groundPos - 4)
   }
 
