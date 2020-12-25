@@ -1,5 +1,5 @@
-import GameScene from "./GameScene"
-import SpriteGameObject from "./SpriteGameObject"
+import GameScene from "../GameScene"
+import SpriteGameObject from "../SpriteGameObject"
 
 export default class HomeBuildingGameObject extends SpriteGameObject {
   private readonly _entryX: number

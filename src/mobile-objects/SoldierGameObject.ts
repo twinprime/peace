@@ -1,4 +1,4 @@
-import GameScene from "./GameScene"
+import GameScene from "../GameScene"
 import HumanGameObject from "./HumanGameObject"
 
 export default class SoldierGameObject extends HumanGameObject {

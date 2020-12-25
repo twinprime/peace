@@ -1,5 +1,5 @@
-import GameObject from "./GameObject"
-import GameScene from "./GameScene"
+import GameObject from "../GameObject"
+import GameScene from "../GameScene"
 
 export default class HealthBarGameObject extends GameObject {
   readonly x1: number
@@ -32,6 +32,8 @@ export default class HealthBarGameObject extends GameObject {
     this.y1 = this.y
     this.y2 = this.y + this._height
   }
+
+  remove(): void { throw "HealthBarGameObject cannot be removed" }
 
   set health(h: number) {
     if (h != this._health) {

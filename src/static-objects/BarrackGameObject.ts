@@ -1,5 +1,5 @@
-import GameScene from "./GameScene"
-import SpriteGameObject from "./SpriteGameObject"
+import GameScene from "../GameScene"
+import SpriteGameObject from "../SpriteGameObject"
 
 export default class BarrackGameObject extends SpriteGameObject {
   private readonly _spawnX: number

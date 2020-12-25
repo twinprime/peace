@@ -1,5 +1,5 @@
-import GameScene from "./GameScene"
-import PhysicsBodyGameObject from "./PhysicsBodyGameObject"
+import GameScene from "../GameScene"
+import PhysicsBodyGameObject from "../PhysicsBodyGameObject"
 
 export default class TreeGameObject extends PhysicsBodyGameObject {
   private readonly sprites: Phaser.GameObjects.Sprite[] = []
@@ -31,6 +31,8 @@ export default class TreeGameObject extends PhysicsBodyGameObject {
     top.setScale(2)
     this.sprites.push(top)
   }
+
+  remove(): void { throw "TreeGameObject cannot be removed" }
 
   update(): void {
     const x = this.mainBody.position.x + 16

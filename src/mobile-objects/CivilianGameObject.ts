@@ -1,4 +1,4 @@
-import GameScene from "./GameScene"
+import GameScene from "../GameScene"
 import HumanGameObject from "./HumanGameObject"
 
 enum CivilianState {

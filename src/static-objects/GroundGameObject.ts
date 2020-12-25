@@ -1,5 +1,5 @@
-import GameObject from "./GameObject"
-import GameScene from "./GameScene"
+import GameObject from "../GameObject"
+import GameScene from "../GameScene"
 
 export default class GroundGameObject extends GameObject {
   readonly x1: number
@@ -23,4 +23,6 @@ export default class GroundGameObject extends GameObject {
     this.width = this.scene.worldWidth
     this.height = sprite.height
   }
+
+  remove(): void { throw "GoundGameObject cannot be removed" }
 }

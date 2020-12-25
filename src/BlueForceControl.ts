@@ -1,38 +1,40 @@
-import AAGunGameObject from "./AAGunGameObject"
-import BarrackGameObject from "./BarrackGameObject"
-import ChopperGameObject from "./ChopperGameObject"
-import CivilianGameObject from "./CivilianGameObject"
-import FactoryGameObject from "./FactoryGameObject"
-import GameButton from "./GameButton"
+import AAGunGameObject from "./static-objects/AAGunGameObject"
+import BarrackGameObject from "./static-objects/BarrackGameObject"
+import ChopperGameObject from "./mobile-objects/ChopperGameObject"
+import CivilianGameObject from "./mobile-objects/CivilianGameObject"
+import FactoryGameObject from "./static-objects/FactoryGameObject"
+import ForceControl from "./ForceControl"
+import GameButton from "./ui-objects/GameButton"
 import GameScene from "./GameScene"
-import HealthBarGameObject from "./HealthBarGameObject"
-import HelipadGameObject from "./HelipadGameObject"
-import HomeBuildingGameObject from "./HomeBuildingGameObject"
-import SoldierGameObject from "./SoldierGameObject"
-import TankGameObject from "./TankGameObject"
-import VillageGameObject from "./VillageGameObject"
+import HealthBarGameObject from "./ui-objects/HealthBarGameObject"
+import HelipadGameObject from "./static-objects/HelipadGameObject"
+import HomeBuildingGameObject from "./static-objects/HomeBuildingGameObject"
+import SoldierGameObject from "./mobile-objects/SoldierGameObject"
+import TankGameObject from "./mobile-objects/TankGameObject"
+import VillageGameObject from "./static-objects/VillageGameObject"
 
-export default class BlueForceControl {
-  private scene: GameScene
+export default class BlueForceControl extends ForceControl {
   private cash = 1000
   private cashDelta = 100
   private cashUpdateInterval = 5000
   private lastCashUpdate = 0
   private cashText: Phaser.GameObjects.Text
-  private factory: FactoryGameObject
-  private barrack: BarrackGameObject
-  private villages: VillageGameObject[] = []
-  private aaGunObjects: AAGunGameObject[] = []
-  private tankObjects: TankGameObject[] = []
-  private soliderObjects: SoldierGameObject[] = []
+
   private liftableBodies: Phaser.Physics.Arcade.Group
-  private boardableBodies: Phaser.Physics.Arcade.Group
+  private villages = new Set<VillageGameObject>()
+  private aaGunObjects=  new Set<AAGunGameObject>()
+  
+  protected factory: FactoryGameObject
+  protected barrack: BarrackGameObject
+  protected tankObjects = new Set<TankGameObject>()
+  protected soliderObjects = new Set<SoldierGameObject>()
+  protected boardableBodies: Phaser.Physics.Arcade.Group
 
   private _chopper: ChopperGameObject
   get chopper(): ChopperGameObject { return this._chopper }
   
   constructor(scene: GameScene) {
-    this.scene = scene
+    super(scene, 1)
 
     const screenWidth = scene.sys.scale.gameSize.width
 
@@ -66,7 +68,7 @@ export default class BlueForceControl {
     nextPos += 100
     const aaGun = new AAGunGameObject(scene, 1, this.liftableBodies, 
       nextPos + 16, 3 * Math.PI / 4)
-    this.aaGunObjects.push(aaGun)
+    this.aaGunObjects.add(aaGun)
     nextPos += 32 + 15
 
     nextPos += 100
@@ -75,7 +77,7 @@ export default class BlueForceControl {
         this.cashDelta += 100
         this.adjustCash(0)
       })
-    this.villages.push(village)
+    this.villages.add(village)
     nextPos += 128 + 15
 
     const healthBar = new HealthBarGameObject(scene, 10, 15, 100)
@@ -103,6 +105,16 @@ export default class BlueForceControl {
       soldierOnBoardCountText.setText(`${humans.get(SoldierGameObject.TYPE)?.length ?? 0}`)
       civilianOnBoardCountText.setText(`${humans.get(CivilianGameObject.TYPE)?.length ?? 0}`)
     })
+    this.scene.gameMap.add(this._chopper)
+
+    const soldier = new SoldierGameObject(this.scene, this.owner, this.scene.worldWidth - 1000, this.boardableBodies)
+    soldier.move(10)
+    this.soliderObjects.add(soldier)
+    this.scene.gameMap.add(soldier)
+    soldier.destroyCallback = () => {
+      this.soliderObjects.delete(soldier)
+      this.scene.gameMap.remove(soldier)
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -110,27 +122,15 @@ export default class BlueForceControl {
     this._chopper.update(time, delta)
     this.villages.forEach(v => v.update(time, delta))
     this.aaGunObjects.forEach(gun => gun.update(time))
-    this.soliderObjects.forEach(soldier => soldier.update(time, delta))
     if ((time - this.lastCashUpdate) >= this.cashUpdateInterval) {
       this.adjustCash(this.cashDelta)
       this.lastCashUpdate = time
     }
+    super.update(time, delta)
   }
 
   private adjustCash(amt: number) {
     this.cash += amt
     this.cashText.setText(`$${this.cash} +$${this.cashDelta}`)
-  }
-
-  private buildTank() {
-    const tank = new TankGameObject(this.scene, 1, this.factory.spawnX)
-    tank.move(50, false)
-    this.tankObjects.push(tank)
-  }
-
-  private buildSoldier() {
-    const soldier = new SoldierGameObject(this.scene, 1, this.barrack.spawnX, this.boardableBodies)
-    soldier.move(10, false)
-    this.soliderObjects.push(soldier)
   }
 }

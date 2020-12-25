@@ -1,6 +1,6 @@
-import CivilianGameObject from "./CivilianGameObject"
-import GameScene from "./GameScene"
-import SpriteGameObject from "./SpriteGameObject"
+import CivilianGameObject from "../mobile-objects/CivilianGameObject"
+import GameScene from "../GameScene"
+import SpriteGameObject from "../SpriteGameObject"
 
 export default class VillageGameObject extends SpriteGameObject {
   private villagers: CivilianGameObject[] = []

@@ -1,5 +1,5 @@
-import GameScene from "./GameScene"
-import PhysicsBodyGameObject from "./PhysicsBodyGameObject"
+import GameScene from "../GameScene"
+import PhysicsBodyGameObject from "../PhysicsBodyGameObject"
 
 export default class HelipadGameObject extends PhysicsBodyGameObject {
   private readonly sprite: Phaser.GameObjects.Sprite
@@ -25,6 +25,8 @@ export default class HelipadGameObject extends PhysicsBodyGameObject {
     this.mainBody.immovable = true
     this._center = new Phaser.Math.Vector2(x, this.scene.groundPos - 4)
   }
+
+  remove(): void { throw "HelipadGameObject cannot be removed" }
 
   chopperOnPad(onPad: boolean): void {
     if (onPad) this.sprite.anims.stop()

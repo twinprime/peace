@@ -1,4 +1,4 @@
-import HumanGameObject from "./HumanGameObject"
+import HumanGameObject from "./mobile-objects/HumanGameObject"
 
 export default interface HumanBoardable {
   boardableGameObject: Phaser.GameObjects.GameObject

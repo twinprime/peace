@@ -1,5 +1,5 @@
-import GameScene from "./GameScene"
-import PhysicsBodyGameObject from "./PhysicsBodyGameObject"
+import GameScene from "../GameScene"
+import PhysicsBodyGameObject from "../PhysicsBodyGameObject"
 
 export default class AAGunGameObject extends PhysicsBodyGameObject {
   private static chopperWaveDistanceSq = 500*500
@@ -40,6 +40,12 @@ export default class AAGunGameObject extends PhysicsBodyGameObject {
     this.bodySprite.setY(Math.min(y, this.maxY))
   }
 
+  remove(): void {
+    this.gunSprite.destroy()
+    this.bodySprite.destroy()
+    this.removed()
+  }
+
   update(time: number): void {
     if (this.faceLeft) {
       this.angle = Phaser.Math.Angle.BetweenPoints(this.scene.chopper.sprite, this.gunSprite)
@@ -50,7 +56,7 @@ export default class AAGunGameObject extends PhysicsBodyGameObject {
           const dir = new Phaser.Math.Vector2(
             this.scene.chopper.sprite.x - this.gunSprite.x,
             this.scene.chopper.sprite.y - this.gunSprite.y).normalize()
-          this.scene.createBullet(this.owner, this.gunSprite.x + dir.x * 16, 
+          this.scene.createBullet(this.owner, 30000, this.gunSprite.x + dir.x * 16, 
             this.gunSprite.y + dir.y * 16,
             dir.x * 100, dir.y * 100)
         }

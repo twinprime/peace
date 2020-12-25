@@ -1,4 +1,4 @@
-import GameScene from "./GameScene"
+import GameScene from "../GameScene"
 
 export default class GameButton {
   private pointerDown = false

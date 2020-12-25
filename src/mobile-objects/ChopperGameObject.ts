@@ -1,10 +1,10 @@
 import CivilianGameObject from "./CivilianGameObject"
-import GameObject from "./GameObject"
-import GameScene from "./GameScene"
-import HelipadGameObject from "./HelipadGameObject"
-import HumanBoardable from "./HumanBoardable"
+import GameObject from "../GameObject"
+import GameScene from "../GameScene"
+import HelipadGameObject from "../static-objects/HelipadGameObject"
+import HumanBoardable from "../HumanBoardable"
 import HumanGameObject from "./HumanGameObject"
-import PhysicsBodyGameObject from "./PhysicsBodyGameObject"
+import PhysicsBodyGameObject from "../PhysicsBodyGameObject"
 import SoldierGameObject from "./SoldierGameObject"
 
 export default class ChopperGameObject extends PhysicsBodyGameObject implements HumanBoardable {
@@ -90,6 +90,12 @@ export default class ChopperGameObject extends PhysicsBodyGameObject implements 
         this.justLiftedObject = true
       }
     })
+  }
+
+  remove(): void {
+    this.bodySprite.destroy()
+    this.tailSprite.destroy()
+    this.removed()
   }
 
   get boardableGameObject(): Phaser.GameObjects.GameObject { return this.bodySprite }

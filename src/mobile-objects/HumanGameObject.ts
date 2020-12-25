@@ -1,6 +1,6 @@
-import GameScene from "./GameScene"
-import HumanBoardable from "./HumanBoardable"
-import PhysicsBodyGameObject from "./PhysicsBodyGameObject"
+import GameScene from "../GameScene"
+import HumanBoardable from "../HumanBoardable"
+import PhysicsBodyGameObject from "../PhysicsBodyGameObject"
 
 export default class HumanGameObject extends PhysicsBodyGameObject {
   protected readonly sprite: Phaser.Physics.Arcade.Sprite
@@ -46,6 +46,11 @@ export default class HumanGameObject extends PhysicsBodyGameObject {
         }
       })
     }
+  }
+
+  remove(): void {
+    this.sprite.destroy()
+    this.removed()
   }
 
   get walkSpeed(): number { return 10 }

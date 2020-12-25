@@ -1,29 +1,31 @@
-import AAGunGameObject from "./AAGunGameObject"
-import BarrackGameObject from "./BarrackGameObject"
-import ChopperGameObject from "./ChopperGameObject"
-import FactoryGameObject from "./FactoryGameObject"
+import AAGunGameObject from "./static-objects/AAGunGameObject"
+import BarrackGameObject from "./static-objects/BarrackGameObject"
+import ChopperGameObject from "./mobile-objects/ChopperGameObject"
+import FactoryGameObject from "./static-objects/FactoryGameObject"
+import ForceControl from "./ForceControl"
 import GameScene from "./GameScene"
-import HelipadGameObject from "./HelipadGameObject"
-import SoldierGameObject from "./SoldierGameObject"
-import TankGameObject from "./TankGameObject"
+import HelipadGameObject from "./static-objects/HelipadGameObject"
+import SoldierGameObject from "./mobile-objects/SoldierGameObject"
+import TankGameObject from "./mobile-objects/TankGameObject"
 
-export default class RedForceControl {
-  private scene: GameScene
-  private factory: FactoryGameObject
-  private barrack: BarrackGameObject
+export default class RedForceControl extends ForceControl {
   private aaGunObjects: AAGunGameObject[] = []
-  private tankObjects: TankGameObject[] = []
-  private soliderObjects: SoldierGameObject[] = []
+
+  protected factory: FactoryGameObject
+  protected barrack: BarrackGameObject
+  protected tankObjects = new Set<TankGameObject>()
+  protected soliderObjects = new Set<SoldierGameObject>()
+  protected boardableBodies = undefined
 
   private _chopper: ChopperGameObject
   get chopper(): ChopperGameObject { return this._chopper }
   
   constructor(scene: GameScene) {
-    this.scene = scene
+    super(scene, -1)
 
     let nextPos = this.scene.worldWidth - 10 - 64
 
-    const helipad = new HelipadGameObject(scene, -1, scene.platforms, nextPos, true)
+    new HelipadGameObject(scene, -1, scene.platforms, nextPos, true)
     nextPos -= 64 + 15
 
     this.factory = new FactoryGameObject(scene, -1, nextPos - 128, true)
@@ -45,17 +47,6 @@ export default class RedForceControl {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   update(time: number, delta: number): void {
     this.aaGunObjects.forEach(gun => gun.update(time))
-  }
-
-  private buildTank() {
-    const tank = new TankGameObject(this.scene, -1, this.factory.spawnX)
-    tank.move(-50, true)
-    this.tankObjects.push(tank)
-  }
-
-  private buildSoldier() {
-    const soldier = new SoldierGameObject(this.scene, -1, this.barrack.spawnX)
-    soldier.move(-10, true)
-    this.soliderObjects.push(soldier)
+    super.update(time, delta)
   }
 }

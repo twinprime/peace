@@ -1,30 +1,30 @@
 import * as Phaser from 'phaser'
-import AAGunGameObject from './AAGunGameObject'
-import BarrackGameObject from './BarrackGameObject'
-import BulletGameObject from './BulletGameObject'
-import ChopperGameObject from './ChopperGameObject'
-import CivilianGameObject from './CivilianGameObject'
+import AAGunGameObject from './static-objects/AAGunGameObject'
+import BarrackGameObject from './static-objects/BarrackGameObject'
+import BulletGameObject from './mobile-objects/BulletGameObject'
+import ChopperGameObject from './mobile-objects/ChopperGameObject'
+import CivilianGameObject from './mobile-objects/CivilianGameObject'
 import RedForceControl from './RedForceControl'
-import FactoryGameObject from './FactoryGameObject'
-import GroundGameObject from './GroundGameObject'
-import HelipadGameObject from './HelipadGameObject'
-import HomeBuildingGameObject from './HomeBuildingGameObject'
+import FactoryGameObject from './static-objects/FactoryGameObject'
+import GroundGameObject from './static-objects/GroundGameObject'
+import HelipadGameObject from './static-objects/HelipadGameObject'
+import HomeBuildingGameObject from './static-objects/HomeBuildingGameObject'
 import BlueForceControl from './BlueForceControl'
-import SoldierGameObject from './SoldierGameObject'
-import TankGameObject from './TankGameObject'
-import TreeGameObject from './TreeGameObject'
-import VillageGameObject from './VillageGameObject'
-import GameObject from './GameObject'
+import SoldierGameObject from './mobile-objects/SoldierGameObject'
+import TankGameObject from './mobile-objects/TankGameObject'
+import TreeGameObject from './static-objects/TreeGameObject'
+import VillageGameObject from './static-objects/VillageGameObject'
+import GameMap from './GameMap'
 
 export default class GameScene extends Phaser.Scene {
   private frameTime = 0
-  private ground: GroundGameObject
   private treeObjects: TreeGameObject[] = []
   private bulletObjects = new Map<Phaser.GameObjects.GameObject, BulletGameObject>()
   private bulletBodies = new Map<number, Phaser.Physics.Arcade.Group>()
-  private playerControl: BlueForceControl
-  private enemeyControl: RedForceControl
-  private gameObjects = new Map<number, Map<number, GameObject>>()
+  private blueControl: BlueForceControl
+  private redControl: RedForceControl
+
+  readonly gameMap: GameMap
 
   private _platformBodies: Phaser.Physics.Arcade.StaticGroup
   get platforms(): Phaser.Physics.Arcade.StaticGroup { return this._platformBodies }
@@ -35,7 +35,7 @@ export default class GameScene extends Phaser.Scene {
   private _groundPos: number
   get groundPos(): number { return this._groundPos }
 
-  get chopper(): ChopperGameObject { return this.playerControl.chopper }
+  get chopper(): ChopperGameObject { return this.blueControl.chopper }
   
   constructor(readonly worldWidth: number, readonly worldHeight: number) {
     super({
@@ -43,8 +43,7 @@ export default class GameScene extends Phaser.Scene {
       visible: false,
       key: 'Game',
     })
-    this.gameObjects.set(-1, new Map())
-    this.gameObjects.set(1, new Map())
+    this.gameMap = new GameMap(worldWidth, 100)
   }
 
   init(): void {
@@ -86,7 +85,7 @@ export default class GameScene extends Phaser.Scene {
     bg.setDisplaySize(this.worldWidth, this.worldHeight)
 
     this._platformBodies = this.physics.add.staticGroup()
-    this.ground = new GroundGameObject(this)
+    new GroundGameObject(this)
 
     this._groundPos = this.sys.game.scale.gameSize.height - 32
 
@@ -106,25 +105,25 @@ export default class GameScene extends Phaser.Scene {
     HelipadGameObject.createCommon(this)
     SoldierGameObject.createCommon(this)
     CivilianGameObject.createCommon(this)
-    this.playerControl = new BlueForceControl(this)
-    this.enemeyControl = new RedForceControl(this)
+    this.blueControl = new BlueForceControl(this)
+    this.redControl = new RedForceControl(this)
 
     this.cameras.main.setBounds(0, 0, this.worldWidth, this.worldHeight)
-    this.cameras.main.startFollow(this.playerControl.chopper.sprite)
+    this.cameras.main.startFollow(this.blueControl.chopper.sprite)
   }
 
-  createBullet(owner: number, x: number, y: number, velocityX: number, velocityY: number): BulletGameObject {
-    const bullet = new BulletGameObject(this, owner, this.bulletBodies.get(owner), x, y, velocityX, velocityY)
+  createBullet(owner: number, duration: number, 
+               x: number, y: number, velocityX: number, velocityY: number, 
+               scale?: number): BulletGameObject {
+    const bullet = new BulletGameObject(this, owner, this.bulletBodies.get(owner), 
+      duration, x, y, velocityX, velocityY, scale)
     this.bulletObjects.set(bullet.sprite, bullet)
+    bullet.destroyCallback = () => this.bulletObjects.delete(bullet.sprite)
     return bullet
   }
 
   removeBullet(b: Phaser.GameObjects.GameObject): void {
-    const bullet = this.bulletObjects.get(b)
-    if (bullet) {
-      this.bulletObjects.delete(b)
-      bullet.remove()
-    }
+    this.bulletObjects.get(b)?.remove()
   }
 
   getBulletBodies(owner: number): Phaser.Physics.Arcade.Group { return this.bulletBodies.get(owner) }
@@ -133,13 +132,11 @@ export default class GameScene extends Phaser.Scene {
     this.frameTime += delta
     if (this.frameTime >= 16.5) {
       this.frameTime = 0
-      this.playerControl.update(time, delta)
-      this.enemeyControl.update(time, delta)
+      this.gameMap.update(time, delta)
+      this.blueControl.update(time, delta)
+      this.redControl.update(time, delta)
       this.treeObjects.forEach(tree => tree.update())
-      this.bulletObjects.forEach(bullet => {
-        if (bullet.sprite.x < 0 || bullet.sprite.x > this.worldWidth || 
-          bullet.sprite.y < 0 || bullet.sprite.y > this.worldHeight) this.removeBullet(bullet.sprite)
-      })
+      this.bulletObjects.forEach(bullet => bullet.update(time))
     }
   }
 
