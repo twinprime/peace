@@ -1,10 +1,20 @@
+import { ScanStopShootBehaviour } from "../behaviours/ScanStopShootBehaviour"
 import GameScene from "../GameScene"
+import { BulletType } from "./BulletGameObject"
 import HumanGameObject from "./HumanGameObject"
 
 export default class SoldierGameObject extends HumanGameObject {
   static readonly TYPE = "soldier"
 
-  constructor(readonly scene: GameScene, owner: number, x: number, 
+  private static readonly bulletDamageMap = new Map<BulletType, number>([
+    [BulletType.Tank, 100], [BulletType.Rifle, 35]])
+
+  private static readonly bulletDuration = 3000
+  private static readonly scanRange = 200
+
+  private readonly behaviour: ScanStopShootBehaviour
+
+  constructor(readonly scene: GameScene, owner: number, x: number, private readonly speed: number,
               boardableObjectGroup?: Phaser.Physics.Arcade.Group) {
     super(SoldierGameObject.TYPE, scene, owner, {
       spriteImage: "soldier-stand",
@@ -16,6 +26,32 @@ export default class SoldierGameObject extends HumanGameObject {
       spriteScale: 0.5,
       defaultFaceLeft: true
     }, x, boardableObjectGroup)
+
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const superThis = this
+    this.behaviour = new ScanStopShootBehaviour(this, 2000, 2000, {
+      findTarget() { return superThis.scene.gameMap.getObjectsFrom(
+        superThis, superThis.owner * -1, 92, SoldierGameObject.scanRange,
+        (obj) => obj instanceof SoldierGameObject).size > 0 },
+      isMoving() { return (superThis.sprite.body as Phaser.Physics.Arcade.Body).velocity.x != 0 },
+      stop() { superThis.move(0, superThis.owner < 0) },
+      move() { superThis.move(superThis.speed * superThis.owner, superThis.owner < 0) },
+      createBullet() { superThis.scene.createBullet(superThis.owner, SoldierGameObject.bulletDuration,
+        superThis.sprite.x + 15 * superThis.owner, superThis.sprite.y, 
+        100 * superThis.owner, 0, BulletType.Rifle) }
+    })
+
+    this.addBulletResponse(this.sprite, SoldierGameObject.bulletDamageMap)
+  }
+
+  die(): void {
+    super.die()
+    this.behaviour.stopped = true
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  update(time: number, delta: number): void {
+    this.behaviour.update(time)
   }
 
   static preload(scene: GameScene): void {

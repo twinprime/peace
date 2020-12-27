@@ -6,16 +6,18 @@ import HumanBoardable from "../HumanBoardable"
 import HumanGameObject from "./HumanGameObject"
 import PhysicsBodyGameObject from "../PhysicsBodyGameObject"
 import SoldierGameObject from "./SoldierGameObject"
+import { BulletType } from "./BulletGameObject"
 
 export default class ChopperGameObject extends PhysicsBodyGameObject implements HumanBoardable {
+  private static readonly bulletDamageMap = new Map<BulletType, number>([
+    [BulletType.Tank, 50], [BulletType.AA, 10], [BulletType.Rifle, 5]])
+    
   private readonly tailSprite: Phaser.GameObjects.Sprite
   private readonly bodySprite: Phaser.GameObjects.Sprite
   private readonly spriteGp: Phaser.GameObjects.Group
   private facing = 0
   private maxSpeed = 600
   private acceleration = 600
-  private health = 100
-  private healthCallback?: ((health: number) => void)
   private keys: Record<"W"|"S"|"A"|"D"|"SPACE", Phaser.Input.Keyboard.Key>
 
   private readonly helipad: HelipadGameObject
@@ -70,13 +72,7 @@ export default class ChopperGameObject extends PhysicsBodyGameObject implements 
 
     this.healthCallback = healthCallback
 
-    this.scene.physics.add.overlap(this.bodySprite, 
-      this.scene.getBulletBodies(this.owner * -1), (me, bullet) => {
-      this.scene.removeBullet(bullet)
-      this.health -= 10
-      if (this.health < 0) this.health = 0
-      this.healthCallback?.(this.health)
-    })
+    this.addBulletResponse(this.bodySprite, ChopperGameObject.bulletDamageMap)
 
     this.ropeObject = this.scene.add.rectangle(x, y, 1, 1, 0xFFFFFF)
     this.ropeObject.setDepth(5)

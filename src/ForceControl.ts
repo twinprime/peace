@@ -31,7 +31,7 @@ export default abstract class ForceControl {
   }
 
   protected buildSoldier(): void {
-    const soldier = new SoldierGameObject(this.scene, this.owner, this.barrack.spawnX, this.boardableBodies)
+    const soldier = new SoldierGameObject(this.scene, this.owner, this.barrack.spawnX, 10, this.boardableBodies)
     soldier.move(10 * this.owner, this.owner < 0)
     this.soliderObjects.add(soldier)
     this.scene.gameMap.add(soldier)

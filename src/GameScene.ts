@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser'
 import AAGunGameObject from './static-objects/AAGunGameObject'
 import BarrackGameObject from './static-objects/BarrackGameObject'
-import BulletGameObject from './mobile-objects/BulletGameObject'
+import { BulletGameObject, BulletType } from './mobile-objects/BulletGameObject'
 import ChopperGameObject from './mobile-objects/ChopperGameObject'
 import CivilianGameObject from './mobile-objects/CivilianGameObject'
 import RedForceControl from './RedForceControl'
@@ -114,9 +114,9 @@ export default class GameScene extends Phaser.Scene {
 
   createBullet(owner: number, duration: number, 
                x: number, y: number, velocityX: number, velocityY: number, 
-               scale?: number): BulletGameObject {
+               type: BulletType): BulletGameObject {
     const bullet = new BulletGameObject(this, owner, this.bulletBodies.get(owner), 
-      duration, x, y, velocityX, velocityY, scale)
+      duration, x, y, velocityX, velocityY, type)
     this.bulletObjects.set(bullet.sprite, bullet)
     bullet.destroyCallback = () => this.bulletObjects.delete(bullet.sprite)
     return bullet

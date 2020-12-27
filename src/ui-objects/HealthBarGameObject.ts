@@ -7,7 +7,6 @@ export default class HealthBarGameObject extends GameObject {
   readonly y1: number
   readonly y2: number
 
-  private _health: number
   private x: number
   private y: number
   private readonly graphics: Phaser.GameObjects.Graphics

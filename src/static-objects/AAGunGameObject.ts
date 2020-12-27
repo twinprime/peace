@@ -1,4 +1,5 @@
 import GameScene from "../GameScene"
+import { BulletType } from "../mobile-objects/BulletGameObject"
 import PhysicsBodyGameObject from "../PhysicsBodyGameObject"
 
 export default class AAGunGameObject extends PhysicsBodyGameObject {
@@ -58,7 +59,7 @@ export default class AAGunGameObject extends PhysicsBodyGameObject {
             this.scene.chopper.sprite.y - this.gunSprite.y).normalize()
           this.scene.createBullet(this.owner, 30000, this.gunSprite.x + dir.x * 16, 
             this.gunSprite.y + dir.y * 16,
-            dir.x * 100, dir.y * 100)
+            dir.x * 100, dir.y * 100, BulletType.AA)
         }
       }
     }

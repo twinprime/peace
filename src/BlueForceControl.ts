@@ -106,15 +106,6 @@ export default class BlueForceControl extends ForceControl {
       civilianOnBoardCountText.setText(`${humans.get(CivilianGameObject.TYPE)?.length ?? 0}`)
     })
     this.scene.gameMap.add(this._chopper)
-
-    const soldier = new SoldierGameObject(this.scene, this.owner, this.scene.worldWidth - 1000, this.boardableBodies)
-    soldier.move(10)
-    this.soliderObjects.add(soldier)
-    this.scene.gameMap.add(soldier)
-    soldier.destroyCallback = () => {
-      this.soliderObjects.delete(soldier)
-      this.scene.gameMap.remove(soldier)
-    }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

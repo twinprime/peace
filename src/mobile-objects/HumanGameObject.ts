@@ -84,6 +84,7 @@ export default class HumanGameObject extends PhysicsBodyGameObject {
     } else {
       if (this.sprite.anims.isPlaying) {
         this.sprite.anims.stop()
+        this.sprite.setTexture(this.config.spriteImage)
       }
       this.sprite.setFlipX((!faceLeft && this.config.defaultFaceLeft) || 
         (faceLeft && !this.config.defaultFaceLeft))
@@ -91,11 +92,12 @@ export default class HumanGameObject extends PhysicsBodyGameObject {
   }
 
   die(): void {
+    this._dying = true
     const body = this.sprite.body as Phaser.Physics.Arcade.Body
     body.setVelocityX(0)
     this.sprite.anims.play(this.config.animDie)
     this.sprite.once("animationcomplete", () => {
-      this.sprite.destroy()
+      this.remove()
     })
   }
 }

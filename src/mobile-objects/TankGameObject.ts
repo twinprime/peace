@@ -1,14 +1,17 @@
 import { ScanStopShootBehaviour } from "../behaviours/ScanStopShootBehaviour"
 import GameScene from "../GameScene"
 import PhysicsBodyGameObject from "../PhysicsBodyGameObject"
+import { BulletType } from "./BulletGameObject"
 
 export default class TankGameObject extends PhysicsBodyGameObject {
+  private static readonly scanRange = 300
   private static readonly bulletDuration = 5000
+  private static readonly bulletDamageMap = new Map<BulletType, number>([
+    [BulletType.Tank, 50], [BulletType.Rifle, 1]])
 
   private readonly sprite: Phaser.Physics.Arcade.Sprite
   private readonly behaviour: ScanStopShootBehaviour
   private faceLeft: boolean
-  private health = 100
 
   constructor(scene: GameScene, owner: number, x: number, private readonly speed: number) {
     super(scene, owner)
@@ -22,22 +25,19 @@ export default class TankGameObject extends PhysicsBodyGameObject {
 
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const superThis = this
-    this.behaviour = new ScanStopShootBehaviour(this, this.scene, 2000, 2000, {
-      findTarget() { return superThis.scene.gameMap.getObjectsFrom(superThis, superThis.owner * -1, 92, 300,
+    this.behaviour = new ScanStopShootBehaviour(this, 2000, 2000, {
+      findTarget() { return superThis.scene.gameMap.getObjectsFrom(
+        superThis, superThis.owner * -1, 92, TankGameObject.scanRange,
         (obj) => obj.y2 > superThis.scene.groundPos - superThis.height).size > 0 },
       isMoving() { return (superThis.sprite.body as Phaser.Physics.Arcade.Body).velocity.x != 0 },
       stop() { superThis.move(0, superThis.owner < 0) },
       move() { superThis.move(superThis.speed * superThis.owner, superThis.owner < 0) },
       createBullet() { superThis.scene.createBullet(superThis.owner, TankGameObject.bulletDuration,
         superThis.sprite.x + 46 * superThis.owner, superThis.sprite.y, 
-        100 * superThis.owner, 0, 1.5) }
+        100 * superThis.owner, 0, BulletType.Tank) }
     })
 
-    this.scene.physics.add.collider(this.sprite, this.scene.getBulletBodies(owner * -1), (me, bullet) => {
-      this.health -= 50
-      this.scene.removeBullet(bullet)
-      if (this.health <= 0) this.die()
-    })
+    this.addBulletResponse(this.sprite, TankGameObject.bulletDamageMap)
   }
 
   update(time: number): void {
@@ -60,8 +60,12 @@ export default class TankGameObject extends PhysicsBodyGameObject {
   }
 
   die(): void {
+    this._dying = true
+
+    this.sprite.setVisible(false)
     const body = this.sprite.body as Phaser.Physics.Arcade.Body
     body.setVelocityX(0)
+    body.setEnable(false)
     const explosion = this.scene.add.sprite(this.sprite.x + (this.faceLeft ? 16 : - 16), 
                                             this.sprite.y, "explode", 0)
     explosion.setDepth(1)
