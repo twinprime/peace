@@ -1,5 +1,7 @@
+import Behaviour from "./Behaviour"
 import GameScene from "./GameScene"
 import { BulletGameObject, BulletType } from "./mobile-objects/BulletGameObject"
+import HealthBarGraphics from "./ui-objects/HealthBarGraphics"
 
 interface WrappedPhaserGameObject {
   wrapper: GameObject
@@ -20,20 +22,43 @@ export default abstract class GameObject {
   get dying(): boolean { return this._dying }
 
   protected _health = 100
-  get health(): number { return this.health }
+  get health(): number { return this._health }
   protected healthCallback?: ((health: number) => void)
+  private healthBar: HealthBarGraphics
+
+  protected behaviour: Behaviour
+  public behaviourActive = true
 
   constructor(readonly scene: GameScene, public owner: number) {}
+
+  showHealthBar(width: number): void {
+    if (!this.healthBar) {
+      this.healthBar = new HealthBarGraphics(this.scene, width, 3)
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  update(time: number, delta: number): void {
+    this.healthBar?.draw(this.x1 + (this.width - this.healthBar.width) / 2, this.y1 - 5, this._health)
+    if (this.behaviourActive) this.behaviour?.update(time)
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   moveTo(x: number, y: number): void { throw "object cannot be moved" }
 
   abstract remove(): void
 
-  removed(): void { this._destroyCallback?.() }
+  removed(): void { 
+    this._destroyCallback?.() 
+  }
 
-  die(): void { 
+  protected beforeDie(): void {
     this._dying = true
+    this.healthBar?.graphics?.destroy()
+  }
+
+  die(): void {
+    this.beforeDie()
     this.remove()
   }
 

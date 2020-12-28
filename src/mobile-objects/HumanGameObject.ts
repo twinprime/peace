@@ -53,11 +53,15 @@ export default class HumanGameObject extends PhysicsBodyGameObject {
     this.removed()
   }
 
+  protected setVisible(visible: boolean): void {
+    this.sprite.setVisible(visible)
+  }
+
   get walkSpeed(): number { return 10 }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   update(time: number, delta: number): void {
-    // do nothing by default
+    super.update(time, delta)
   }
 
   disembark(x: number, velocityX: number): void {
@@ -92,7 +96,8 @@ export default class HumanGameObject extends PhysicsBodyGameObject {
   }
 
   die(): void {
-    this._dying = true
+    super.beforeDie()
+
     const body = this.sprite.body as Phaser.Physics.Arcade.Body
     body.setVelocityX(0)
     this.sprite.anims.play(this.config.animDie)

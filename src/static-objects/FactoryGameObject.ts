@@ -15,6 +15,11 @@ export default class FactoryGameObject extends SpriteGameObject {
     } else this._spawnX = x - 128 + 70
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  update(time: number, delta: number): void {
+    super.update(time, delta)
+  }
+
   static preload(scene: GameScene): void {
     scene.load.image("factory", "/images/factory.png")
   }

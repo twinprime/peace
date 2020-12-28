@@ -15,6 +15,7 @@ import TankGameObject from './mobile-objects/TankGameObject'
 import TreeGameObject from './static-objects/TreeGameObject'
 import VillageGameObject from './static-objects/VillageGameObject'
 import GameMap from './GameMap'
+import BunkerGameObject from './static-objects/BunkerGameObject'
 
 export default class GameScene extends Phaser.Scene {
   private frameTime = 0
@@ -65,6 +66,7 @@ export default class GameScene extends Phaser.Scene {
     HelipadGameObject.preload(this)
     FactoryGameObject.preload(this)
     BarrackGameObject.preload(this)
+    BunkerGameObject.preload(this)
     TankGameObject.preload(this)
   }
 
@@ -136,7 +138,7 @@ export default class GameScene extends Phaser.Scene {
       this.blueControl.update(time, delta)
       this.redControl.update(time, delta)
       this.treeObjects.forEach(tree => tree.update())
-      this.bulletObjects.forEach(bullet => bullet.update(time))
+      this.bulletObjects.forEach(bullet => bullet.update(time, delta))
     }
   }
 

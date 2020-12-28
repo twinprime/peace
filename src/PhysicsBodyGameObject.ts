@@ -1,7 +1,7 @@
 import GameObject from "./GameObject"
 
 export default abstract class PhysicsBodyGameObject extends GameObject {
-  protected _mainBody: Phaser.Physics.Arcade.Body
+  private _mainBody: Phaser.Physics.Arcade.Body
 
   protected get mainBody(): Phaser.Physics.Arcade.Body { return this._mainBody }
   protected set mainBody(b: Phaser.Physics.Arcade.Body) {
@@ -12,6 +12,25 @@ export default abstract class PhysicsBodyGameObject extends GameObject {
   get x2(): number { return this._mainBody.x + this._mainBody.width }
   get y1(): number { return this._mainBody.y }
   get y2(): number { return this._mainBody.y + this._mainBody.height }
-  get width(): number { return this.mainBody.width }
-  get height(): number { return this.mainBody.height }
+  get width(): number { return this._mainBody.width }
+  get height(): number { return this._mainBody.height }
+
+  protected abstract setVisible(visible: boolean): void
+
+  die(): void {
+    super.beforeDie()
+
+    this.setVisible(false)
+    this._mainBody.setVelocityX(0)
+    this._mainBody.setEnable(false)
+    const explosion = this.scene.add.sprite(this._mainBody.x + this._mainBody.width / 2,
+                                            this._mainBody.y + this._mainBody.height / 2,
+                                            "explode", 0)
+    explosion.setDepth(1)
+    explosion.anims.play("explode")
+    explosion.once("animationcomplete", () => {
+      explosion.destroy()
+      this.remove()
+    })
+  }
 }

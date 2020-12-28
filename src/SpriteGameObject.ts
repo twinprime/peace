@@ -16,11 +16,33 @@ export default class SpriteGameObject extends GameObject {
   get x2(): number { return this._mainSprite.x + this.halfWidth }
   get y1(): number { return this._mainSprite.y - this.halfHeight }
   get y2(): number { return this._mainSprite.y + this.halfHeight }
-  get width(): number { return this.mainSprite.width }
-  get height(): number { return this.mainSprite.height }
+  get width(): number { return this.mainSprite.width * this.mainSprite.scaleX }
+  get height(): number { return this.mainSprite.height * this.mainSprite.scaleY }
+
+  moveTo(x: number, y: number): void {
+    this.mainSprite.setX(x)
+    this.mainSprite.setY(Math.min(this.scene.groundPos - this.halfHeight, y))
+  }
 
   remove(): void {
     this._mainSprite.destroy()
     this.removed()
+  }
+
+  die(): void {
+    super.beforeDie()
+
+    this._mainSprite.setVisible(false)
+    const body = this._mainSprite.body as Phaser.Physics.Arcade.Body
+    body.setVelocityX(0)
+    body.setEnable(false)
+    const explosion = this.scene.add.sprite(this._mainSprite.x,
+                                            this._mainSprite.y, "explode", 0)
+    explosion.setDepth(1)
+    explosion.anims.play("explode")
+    explosion.once("animationcomplete", () => {
+      explosion.destroy()
+      this.remove()
+    })
   }
 }

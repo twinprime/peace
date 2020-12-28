@@ -13,14 +13,12 @@ export class ScanStopShootBehaviour {
   private lastScan = 0
   private haveTarget = false
   
-  stopped = false
-
   constructor(private readonly subject: GameObject, private readonly scanInterval: number, private readonly fireInterval: number,
     private readonly callback: ScanStopShootBehaviourCallback) {}
   
   update(time: number): void {
     if (this.subject.dying != true) {
-      if (!this.stopped && (time - this.lastScan) >= this.scanInterval) {
+      if ((time - this.lastScan) >= this.scanInterval) {
         this.lastScan = time
         this.haveTarget = this.callback.findTarget()
         if (this.haveTarget) {

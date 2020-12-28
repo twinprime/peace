@@ -7,12 +7,11 @@ export default class SoldierGameObject extends HumanGameObject {
   static readonly TYPE = "soldier"
 
   private static readonly bulletDamageMap = new Map<BulletType, number>([
-    [BulletType.Tank, 100], [BulletType.Rifle, 35]])
+    [BulletType.Tank, 100], [BulletType.Bunker, 100], 
+    [BulletType.Chopper, 100], [BulletType.Rifle, 35]])
 
   private static readonly bulletDuration = 3000
   private static readonly scanRange = 200
-
-  private readonly behaviour: ScanStopShootBehaviour
 
   constructor(readonly scene: GameScene, owner: number, x: number, private readonly speed: number,
               boardableObjectGroup?: Phaser.Physics.Arcade.Group) {
@@ -42,16 +41,6 @@ export default class SoldierGameObject extends HumanGameObject {
     })
 
     this.addBulletResponse(this.sprite, SoldierGameObject.bulletDamageMap)
-  }
-
-  die(): void {
-    super.die()
-    this.behaviour.stopped = true
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  update(time: number, delta: number): void {
-    this.behaviour.update(time)
   }
 
   static preload(scene: GameScene): void {

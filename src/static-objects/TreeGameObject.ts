@@ -34,6 +34,10 @@ export default class TreeGameObject extends PhysicsBodyGameObject {
 
   remove(): void { throw "TreeGameObject cannot be removed" }
 
+  protected setVisible(visible: boolean): void {
+    this.sprites.forEach(s => s.setVisible(visible))
+  }
+
   update(): void {
     const x = this.mainBody.position.x + 16
     let y = this.mainBody.position.y + this.mainBody.height - 16

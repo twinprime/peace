@@ -1,4 +1,3 @@
-import AAGunGameObject from "./static-objects/AAGunGameObject"
 import BarrackGameObject from "./static-objects/BarrackGameObject"
 import ChopperGameObject from "./mobile-objects/ChopperGameObject"
 import FactoryGameObject from "./static-objects/FactoryGameObject"
@@ -9,8 +8,6 @@ import SoldierGameObject from "./mobile-objects/SoldierGameObject"
 import TankGameObject from "./mobile-objects/TankGameObject"
 
 export default class RedForceControl extends ForceControl {
-  private aaGunObjects: AAGunGameObject[] = []
-
   protected factory: FactoryGameObject
   protected barrack: BarrackGameObject
   protected tankObjects = new Set<TankGameObject>()
@@ -36,8 +33,7 @@ export default class RedForceControl extends ForceControl {
     
     nextPos -= 100
     const gunBodies = scene.physics.add.group()
-    const aaGun = new AAGunGameObject(scene, -1, gunBodies, nextPos - 16, Math.PI / 4)
-    this.aaGunObjects.push(aaGun)
+    this.buildAAGun(nextPos - 16, gunBodies)
     nextPos -= 32 + 15
 
     setTimeout(() => this.buildSoldier(), 2000)
@@ -46,7 +42,6 @@ export default class RedForceControl extends ForceControl {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   update(time: number, delta: number): void {
-    this.aaGunObjects.forEach(gun => gun.update(time))
     super.update(time, delta)
   }
 }

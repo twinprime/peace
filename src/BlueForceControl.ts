@@ -1,4 +1,3 @@
-import AAGunGameObject from "./static-objects/AAGunGameObject"
 import BarrackGameObject from "./static-objects/BarrackGameObject"
 import ChopperGameObject from "./mobile-objects/ChopperGameObject"
 import CivilianGameObject from "./mobile-objects/CivilianGameObject"
@@ -22,7 +21,6 @@ export default class BlueForceControl extends ForceControl {
 
   private liftableBodies: Phaser.Physics.Arcade.Group
   private villages = new Set<VillageGameObject>()
-  private aaGunObjects=  new Set<AAGunGameObject>()
   
   protected factory: FactoryGameObject
   protected barrack: BarrackGameObject
@@ -66,9 +64,7 @@ export default class BlueForceControl extends ForceControl {
     this.liftableBodies = this.scene.physics.add.group()
     
     nextPos += 100
-    const aaGun = new AAGunGameObject(scene, 1, this.liftableBodies, 
-      nextPos + 16, 3 * Math.PI / 4)
-    this.aaGunObjects.add(aaGun)
+    this.buildAAGun(nextPos + 16, this.liftableBodies)
     nextPos += 32 + 15
 
     nextPos += 100
@@ -80,7 +76,11 @@ export default class BlueForceControl extends ForceControl {
     this.villages.add(village)
     nextPos += 128 + 15
 
-    const healthBar = new HealthBarGameObject(scene, 10, 15, 100)
+    nextPos += 100
+    this.buildBunker(nextPos + 16, this.liftableBodies)
+    nextPos += 32 + 15
+
+    const healthBar = new HealthBarGameObject(scene, 10, 15)
 
     let onBoardCountX = 10 + healthBar.width + 25
     const civilianIcon = CivilianGameObject.createIcon(scene, onBoardCountX, 16)
@@ -112,7 +112,6 @@ export default class BlueForceControl extends ForceControl {
   update(time: number, delta: number): void {
     this._chopper.update(time, delta)
     this.villages.forEach(v => v.update(time, delta))
-    this.aaGunObjects.forEach(gun => gun.update(time))
     if ((time - this.lastCashUpdate) >= this.cashUpdateInterval) {
       this.adjustCash(this.cashDelta)
       this.lastCashUpdate = time

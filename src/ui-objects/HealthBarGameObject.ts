@@ -1,5 +1,6 @@
 import GameObject from "../GameObject"
 import GameScene from "../GameScene"
+import HealthBarGraphics from "./HealthBarGraphics"
 
 export default class HealthBarGameObject extends GameObject {
   readonly x1: number
@@ -7,45 +8,30 @@ export default class HealthBarGameObject extends GameObject {
   readonly y1: number
   readonly y2: number
 
-  private x: number
-  private y: number
-  private readonly graphics: Phaser.GameObjects.Graphics
+  private readonly graphics: HealthBarGraphics
   
-  private _width = 100
-  get width(): number { return this._width }
-  private _height = 10
-  get height(): number { return this._height }
+  get width(): number { return this.graphics.width }
+  get height(): number { return this.graphics.height }
   
-  constructor(scene: GameScene, x: number, y: number, health: number) {
+  constructor(scene: GameScene, private readonly x: number, private readonly y: number) {
     super(scene, 0)
     
     this.x = x
     this.y = y
-    this._health = health
-    this.graphics = this.scene.add.graphics()
-    this.graphics.setScrollFactor(0, 0)
-    this.draw()
+    this.graphics = new HealthBarGraphics(scene, 100, 10)
+    this.graphics.graphics.setScrollFactor(0, 0)
+    this.graphics.draw(x, y, this._health)
 
     this.x1 = this.x
-    this.x2 = this.x + this._width
+    this.x2 = this.x + this.width
     this.y1 = this.y
-    this.y2 = this.y + this._height
+    this.y2 = this.y + this.height
+  }
+
+  set health(h: number) {
+    this._health = h
+    this.graphics.draw(this.x, this.y, h)
   }
 
   remove(): void { throw "HealthBarGameObject cannot be removed" }
-
-  set health(h: number) {
-    if (h != this._health) {
-      this._health = h
-      this.draw()
-    }
-  }
-
-  private draw() {
-    this.graphics.clear()
-    this.graphics.fillStyle(0xf5e042)
-    this.graphics.fillRect(this.x, this.y, this._width, this._height)
-    this.graphics.fillStyle(0xff0000)
-    this.graphics.fillRect(this.x, this.y, this._health, this._height)
-  }
 }

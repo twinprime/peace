@@ -3,7 +3,9 @@ import { BulletType } from "../mobile-objects/BulletGameObject"
 import PhysicsBodyGameObject from "../PhysicsBodyGameObject"
 
 export default class AAGunGameObject extends PhysicsBodyGameObject {
-  private static chopperWaveDistanceSq = 500*500
+  private static chopperTrackDistanceSq = 500*500
+  private static readonly bulletDamageMap = new Map<BulletType, number>([
+    [BulletType.Chopper, 10], [BulletType.Tank, 20], [BulletType.Bunker, 10], [BulletType.Rifle, 1]])
 
   private _angle = 0
   private lastFired = 0
@@ -32,6 +34,10 @@ export default class AAGunGameObject extends PhysicsBodyGameObject {
     this.addWrapperProperty(this.bodySprite)
 
     this.mainBody = body
+
+    this.addBulletResponse(this.bodySprite, AAGunGameObject.bulletDamageMap)
+
+    this.showHealthBar(16)
   }
 
   moveTo(x: number, y: number): void {
@@ -47,11 +53,19 @@ export default class AAGunGameObject extends PhysicsBodyGameObject {
     this.removed()
   }
 
-  update(time: number): void {
+  protected setVisible(visible: boolean): void {
+    this.gunSprite.setVisible(visible)
+    this.bodySprite.setVisible(visible)
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  update(time: number, delta: number): void {
+    super.update(time, delta)
+    
     if (this.faceLeft) {
       this.angle = Phaser.Math.Angle.BetweenPoints(this.scene.chopper.sprite, this.gunSprite)
       const distSq = Phaser.Math.Distance.BetweenPointsSquared(this.gunSprite, this.scene.chopper.sprite)
-      if (distSq < AAGunGameObject.chopperWaveDistanceSq) {
+      if (distSq < AAGunGameObject.chopperTrackDistanceSq) {
         if ((time - this.lastFired) > 1000) {
           this.lastFired = time
           const dir = new Phaser.Math.Vector2(

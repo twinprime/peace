@@ -40,6 +40,9 @@ export default class ChopperGameObject extends PhysicsBodyGameObject implements 
   private lastBoardTime = 0
   private lastDisembarkTime = 0
   private perBoardingTime = 1000
+  private lastFireTime = 0
+  private minFireInterval = 200
+  private bulletSpeed = 150
 
   get sprite(): Phaser.GameObjects.Sprite {
     return this.bodySprite
@@ -83,6 +86,7 @@ export default class ChopperGameObject extends PhysicsBodyGameObject implements 
       if (this.ropeLength > 0 && this.ropeVelocity > 0 && !this.liftedObject) {
         this.ropeVelocity = 0
         this.liftedObject = this.getWrapper(liftable)
+        this.liftedObject.behaviourActive = false
         this.justLiftedObject = true
       }
     })
@@ -92,6 +96,11 @@ export default class ChopperGameObject extends PhysicsBodyGameObject implements 
     this.bodySprite.destroy()
     this.tailSprite.destroy()
     this.removed()
+  }
+
+  protected setVisible(visible: boolean): void {
+    this.bodySprite.setVisible(visible)
+    this.tailSprite.setVisible(visible)
   }
 
   get boardableGameObject(): Phaser.GameObjects.GameObject { return this.bodySprite }
@@ -190,6 +199,8 @@ export default class ChopperGameObject extends PhysicsBodyGameObject implements 
     this.updateOnBoard(time)
     
     this.updateRope(delta)
+
+    this.updateFire(time)
   }
 
   private updateOnBoard(time: number) {
@@ -220,8 +231,9 @@ export default class ChopperGameObject extends PhysicsBodyGameObject implements 
     if (!this._onGround && !this.onPad && !this.justLiftedObject && this.keys.SPACE.isDown) {
       if (!this.liftedObject && this.ropeVelocity == 0 && this.facing == 0) {
         this.ropeVelocity = 64
-      } else if (this.liftedObject) {
+      } else if (this.liftedObject && this.facing == 0) {
         if (this.ropeObject.displayHeight < this.ropeLength) {
+          this.liftedObject.behaviourActive = true
           this.liftedObject = undefined
           this.ropeVelocity = -64
         } else this.ropeVelocity = 64
@@ -254,6 +266,18 @@ export default class ChopperGameObject extends PhysicsBodyGameObject implements 
     if (this.liftedObject) {
       const ropeEnd = this.ropeObject.getBottomCenter()
       this.liftedObject.moveTo(ropeEnd.x, ropeEnd.y)
+    }
+  }
+
+  private updateFire(time: number) {
+    if (this.facing != 0 && (time - this.lastFireTime) > this.minFireInterval && 
+        this.keys.SPACE.isDown) {
+      this.lastFireTime = time
+      this.scene.createBullet(this.owner, 10000, 
+        this.mainBody.x + 32 * this.facing, this.mainBody.y + 24,
+        this.mainBody.velocity.x + this.bulletSpeed * this.facing,
+        this.mainBody.velocity.y + this.bulletSpeed,
+        BulletType.Chopper)
     }
   }
 

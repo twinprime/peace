@@ -13,6 +13,11 @@ export default class BarrackGameObject extends SpriteGameObject {
     this._spawnX = x
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  update(time: number, delta: number): void {
+    super.update(time, delta)
+  }
+
   static preload(scene: GameScene): void {
     scene.load.image("barrack", "/images/barrack.png")
   }

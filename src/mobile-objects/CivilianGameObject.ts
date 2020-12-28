@@ -38,6 +38,8 @@ export default class CivilianGameObject extends HumanGameObject {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   update(time: number, delta: number): void {
+    super.update(time, delta)
+    
     const body = this.sprite.body as Phaser.Physics.Arcade.Body
     if (body.x < this.homePos) {
       this.homeCallback(this)

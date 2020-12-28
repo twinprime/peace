@@ -2,12 +2,13 @@ import GameScene from "../GameScene"
 import PhysicsBodyGameObject from "../PhysicsBodyGameObject"
 
 export enum BulletType {
-  AA, Tank, Rifle
+  Chopper, AA, Bunker, Tank, Rifle
 }
 
 export class BulletGameObject extends PhysicsBodyGameObject {
   private static typeToScale = new Map<BulletType, number>([
-    [BulletType.AA, 1], [BulletType.Tank, 1.5], [BulletType.Rifle, 0.5]])
+    [BulletType.Chopper, 0.75], [BulletType.AA, 1], [BulletType.Bunker, 1.5], 
+    [BulletType.Tank, 1.5], [BulletType.Rifle, 0.5]])
 
   private readonly _sprite: Phaser.GameObjects.Sprite
   private startTime = 0
@@ -40,13 +41,19 @@ export class BulletGameObject extends PhysicsBodyGameObject {
     this.removed()
   }
 
-  update(time: number): void {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  update(time: number, delta: number): void {
+    super.update(time, delta)
     if (this.startTime == 0) this.startTime = time
     else if ((time - this.startTime) > this.duration) this.remove()
     else {
       if (this._sprite.x < 0 || this._sprite.x > this.scene.worldWidth || 
         this._sprite.y < 0 || this._sprite.y > this.scene.worldHeight) this.remove()
     }
+  }
+
+  protected setVisible(visible: boolean): void {
+    this._sprite.setVisible(visible)
   }
 
   static preload(scene: GameScene): void {
