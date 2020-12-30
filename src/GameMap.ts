@@ -81,11 +81,11 @@ export default class GameMap {
                  startOffset: number, distance: number,
                  filter?: (obj: GameObject) => boolean): Set<GameObject> {
     if (thisObj.owner > 0) {
-      return this.getObjectsWithin(thatOwner, thisObj.x1 + startOffset,
-         thisObj.x1 + startOffset + distance, filter)
+      return this.getObjectsWithin(thatOwner, thisObj.x + startOffset,
+         thisObj.x + startOffset + distance, filter)
     } else {
-      return this.getObjectsWithin(thatOwner, thisObj.x1 - startOffset - distance, 
-        thisObj.x1 - startOffset, filter)
+      return this.getObjectsWithin(thatOwner, thisObj.x - startOffset - distance, 
+        thisObj.x - startOffset, filter)
     }
   }
 

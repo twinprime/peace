@@ -5,7 +5,7 @@ import SpriteGameObject from "../SpriteGameObject"
 
 export default class BunkerGameObject extends SpriteGameObject {
   private static readonly scanRange = 500
-  private static readonly bulletDuration = 5000
+  private static readonly bulletDuration = 6000
   private static readonly bulletDamageMap = new Map<BulletType, number>([
     [BulletType.Chopper, 10], [BulletType.Tank, 20], [BulletType.Bunker, 10], [BulletType.Rifle, 1]])
 

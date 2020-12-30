@@ -13,6 +13,6 @@ export default class HealthBarGraphics {
     this.graphics.fillStyle(0xf5e042)
     this.graphics.fillRect(x, y, this.width, this.height)
     this.graphics.fillStyle(0xff0000)
-    this.graphics.fillRect(x, y, health / 100 * this.width, this.height)
+    this.graphics.fillRect(x, y, Math.max(0, health) / 100 * this.width, this.height)
   }
 }

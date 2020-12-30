@@ -3,7 +3,8 @@ import { BulletType } from "../mobile-objects/BulletGameObject"
 import PhysicsBodyGameObject from "../PhysicsBodyGameObject"
 
 export default class AAGunGameObject extends PhysicsBodyGameObject {
-  private static chopperTrackDistanceSq = 500*500
+  private static chopperTrackDistanceSq = 800*800
+  private static fireInterval = 250
   private static readonly bulletDamageMap = new Map<BulletType, number>([
     [BulletType.Chopper, 10], [BulletType.Tank, 20], [BulletType.Bunker, 10], [BulletType.Rifle, 1]])
 
@@ -62,7 +63,7 @@ export default class AAGunGameObject extends PhysicsBodyGameObject {
   update(time: number, delta: number): void {
     super.update(time, delta)
     
-    if (this.faceLeft && (time - this.lastFired > 500)) {
+    if (this.faceLeft && (time - this.lastFired > AAGunGameObject.fireInterval)) {
       const target = this.scene.gameMap.findChopper(this, AAGunGameObject.chopperTrackDistanceSq)
       if (target) {
         this.lastFired = time
@@ -72,7 +73,7 @@ export default class AAGunGameObject extends PhysicsBodyGameObject {
           target.y - this.gunSprite.y).normalize()
         this.scene.createBullet(this.owner, 30000, this.gunSprite.x + dir.x * 16, 
           this.gunSprite.y + dir.y * 16,
-          dir.x * 200, dir.y * 200, BulletType.AA)
+          dir.x * 450, dir.y * 450, BulletType.AA)
       }
     }
   }

@@ -40,8 +40,16 @@ export default class RedForceControl extends ForceControl {
     this.buildAAGun(nextPos - 16, gunBodies)
     nextPos -= 32 + 15
 
+    this.buildBunker(2300, gunBodies)
+    this.buildAAGun(2600, gunBodies)
+    this.buildAAGun(2400, gunBodies)
+    this.buildMissileBase(2700, gunBodies)
+
     setTimeout(() => this.buildSoldier(), 2000)
-    setTimeout(() => this.buildMissileLauncher(), 5000)
+    setTimeout(() => this.buildTank(), 3000)
+    setTimeout(() => this.buildTank(), 5000)
+    setTimeout(() => this.buildMissileLauncher(), 7000)
+    setTimeout(() => this.buildMissileLauncher(), 9000)
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

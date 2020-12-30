@@ -97,6 +97,7 @@ export default class ChopperGameObject extends PhysicsBodyGameObject implements 
     this.bodySprite.destroy()
     this.tailSprite.destroy()
     this.scene.gameMap.remove(this)
+    this.scene.gameOver()
     this.removed()
   }
 

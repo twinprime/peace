@@ -72,17 +72,14 @@ export default class BlueForceControl extends ForceControl {
     nextPos += 32 + 15
 
     nextPos += 100
-    const village = new VillageGameObject(scene, 1, homeBuilding.entryX, nextPos, false,
-      this.boardableBodies, () => {
-        this.cashDelta += 100
-        this.adjustCash(0)
-      })
-    this.villages.add(village)
+    this.buildVillage(nextPos, homeBuilding.entryX)
     nextPos += 128 + 15
 
     nextPos += 100
     this.buildBunker(nextPos + 16, this.liftableBodies)
     nextPos += 32 + 15
+
+    this.buildVillage(2500, homeBuilding.entryX)
 
     const healthBar = new HealthBarGameObject(scene, 10, 15)
 
@@ -126,5 +123,14 @@ export default class BlueForceControl extends ForceControl {
   private adjustCash(amt: number) {
     this.cash += amt
     this.cashText.setText(`$${this.cash} +$${this.cashDelta}`)
+  }
+
+  private buildVillage(x: number, homePos: number) {
+    const village = new VillageGameObject(this.scene, 1, homePos, x, false,
+      this.boardableBodies, () => {
+        this.cashDelta += 100
+        this.adjustCash(0)
+      })
+    this.villages.add(village)
   }
 }

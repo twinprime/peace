@@ -171,6 +171,13 @@ export default class GameScene extends Phaser.Scene {
     }
   }
 
+  gameOver(): void {
+    const text = this.add.text(0, this.sys.game.scale.gameSize.height / 4, "Game Over",
+      { color: "red", fontSize: 24 })
+    text.setX((this.sys.game.scale.gameSize.width - text.width) / 2)
+    text.setScrollFactor(0, 0)
+  }
+
   end(): void {
     // Nothing to do yet
   }

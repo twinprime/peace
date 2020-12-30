@@ -4,8 +4,8 @@ import SpriteGameObject from "../SpriteGameObject"
 import { BulletType } from "./BulletGameObject"
 
 export default class TankGameObject extends SpriteGameObject {
-  private static readonly scanRange = 300
-  private static readonly bulletDuration = 5000
+  private static readonly scanRange = 550
+  private static readonly bulletDuration = 6000
   private static readonly bulletDamageMap = new Map<BulletType, number>([
     [BulletType.Chopper, 10], [BulletType.Tank, 50], 
     [BulletType.Bunker, 50], [BulletType.Rifle, 1]])
@@ -26,7 +26,7 @@ export default class TankGameObject extends SpriteGameObject {
         superThis, superThis.owner * -1, 92, TankGameObject.scanRange,
         (obj) => obj.y2 > superThis.scene.groundPos - superThis.height) },
       isMoving() { return (superThis.mainSprite.body as Phaser.Physics.Arcade.Body).velocity.x != 0 },
-      stop() { superThis.move(0, superThis.owner < 0) },
+      stop() { setTimeout(() => { if (!superThis.dying) superThis.move(0, superThis.owner < 0) }, Math.random() * 2000) },
       move() { superThis.move(superThis.speed * superThis.owner, superThis.owner < 0) },
       createBullet() { superThis.scene.createBullet(superThis.owner, TankGameObject.bulletDuration,
         superThis.mainSprite.x + 46 * superThis.owner, superThis.mainSprite.y, 

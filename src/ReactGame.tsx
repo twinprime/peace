@@ -30,7 +30,7 @@ export class ReactGame extends React.Component {
       
       parent: 'game',
       backgroundColor: '#000000',
-      scene: new GameScene(1068 * 3, 600),
+      scene: new GameScene(1068 * 5, 600),
     })
   }
 }

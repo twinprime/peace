@@ -33,7 +33,7 @@ export default class SoldierGameObject extends HumanGameObject {
         superThis, superThis.owner * -1, 92, SoldierGameObject.scanRange,
         (obj) => obj instanceof SoldierGameObject) },
       isMoving() { return (superThis.sprite.body as Phaser.Physics.Arcade.Body).velocity.x != 0 },
-      stop() { superThis.move(0, superThis.owner < 0) },
+      stop() { setTimeout(() => { if (!superThis.dying) superThis.move(0, superThis.owner < 0) }, Math.random() * 1000) },
       move() { superThis.move(superThis.speed * superThis.owner, superThis.owner < 0) },
       createBullet() { superThis.scene.createBullet(superThis.owner, SoldierGameObject.bulletDuration,
         superThis.sprite.x + 15 * superThis.owner, superThis.sprite.y, 
