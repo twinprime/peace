@@ -1,17 +1,17 @@
 import GameObject from "../GameObject"
 
 export interface ScanStopShootBehaviourCallback {
-  findTarget(): boolean
+  findTarget(): Set<GameObject>
   isMoving(): boolean
   stop(): void
   move(): void
-  createBullet(): void
+  createBullet(targets: Set<GameObject>): void
 }
 
 export class ScanStopShootBehaviour {
   private lastFired = 0
   private lastScan = 0
-  private haveTarget = false
+  private targets = new Set<GameObject>()
   
   constructor(private readonly subject: GameObject, private readonly scanInterval: number, private readonly fireInterval: number,
     private readonly callback: ScanStopShootBehaviourCallback) {}
@@ -20,16 +20,16 @@ export class ScanStopShootBehaviour {
     if (this.subject.dying != true) {
       if ((time - this.lastScan) >= this.scanInterval) {
         this.lastScan = time
-        this.haveTarget = this.callback.findTarget()
-        if (this.haveTarget) {
+        this.targets = this.callback.findTarget()
+        if (this.targets.size > 0) {
           this.callback.stop()
         } else if (!this.callback.isMoving()) {
           this.callback.move()
         }
       }
-      if (this.haveTarget && (time - this.lastFired) > this.fireInterval) {
+      if (this.targets.size > 0 && (this.lastFired == 0 || (time - this.lastFired) > this.fireInterval)) {
         this.lastFired = time
-        this.callback.createBullet()
+        this.callback.createBullet(this.targets)
       }
     }
   }

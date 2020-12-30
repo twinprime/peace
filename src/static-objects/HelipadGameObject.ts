@@ -28,7 +28,7 @@ export default class HelipadGameObject extends PhysicsBodyGameObject {
 
   remove(): void { throw "HelipadGameObject cannot be removed" }
 
-  protected setVisible(visible: boolean): void {
+  setVisible(visible: boolean): void {
     this.sprite.setVisible(visible)
   }
 

@@ -1,6 +1,7 @@
 import Behaviour from "./Behaviour"
 import GameScene from "./GameScene"
 import { BulletGameObject, BulletType } from "./mobile-objects/BulletGameObject"
+import { MissileGameObject } from "./mobile-objects/MissileGameObject"
 import HealthBarGraphics from "./ui-objects/HealthBarGraphics"
 
 interface WrappedPhaserGameObject {
@@ -11,6 +12,8 @@ export default abstract class GameObject {
   protected _destroyCallback: () => void
   set destroyCallback(cb: () => void) { this._destroyCallback = cb }
 
+  abstract readonly x: number
+  abstract readonly y: number
   abstract readonly x1: number
   abstract readonly x2: number
   abstract readonly y1: number
@@ -39,12 +42,14 @@ export default abstract class GameObject {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   update(time: number, delta: number): void {
-    this.healthBar?.draw(this.x1 + (this.width - this.healthBar.width) / 2, this.y1 - 5, this._health)
+    this.healthBar?.draw(this.x - this.healthBar.width / 2, this.y1 - 5, this._health)
     if (this.behaviourActive) this.behaviour?.update(time)
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   moveTo(x: number, y: number): void { throw "object cannot be moved" }
+
+  abstract setVisible(visible: boolean): void
 
   abstract remove(): void
 
@@ -73,12 +78,24 @@ export default abstract class GameObject {
   addBulletResponse(subject: Phaser.GameObjects.GameObject, 
                     damageMap: Map<BulletType, number>,
                     defaultDamage = 0): void {
-    this.scene.physics.add.overlap(subject, this.scene.getBulletBodies(this.owner * -1), (me, bullet) => {
+    this.scene.physics.add.overlap(subject, this.scene.getBulletBodies(this.owner * -1), (me, b) => {
       if (!this.dying) {
-        const bulletType = (this.getWrapper(bullet) as BulletGameObject).bulletType
-        this._health -= damageMap.get(bulletType) ?? defaultDamage
+        const bullet = this.getWrapper(b) as BulletGameObject
+        this._health -= damageMap.get(bullet.bulletType) ?? defaultDamage
         this.healthCallback?.(this._health)
         this.scene.removeBullet(bullet)
+        if (this._health <= 0) this.die()
+      }
+    })
+  }
+
+  addMissileResponse(subject: Phaser.GameObjects.GameObject, damage: number): void {
+    this.scene.physics.add.overlap(subject, this.scene.getMissileBodies(this.owner * -1), (me, m) => {
+      if (!this.dying) {
+        const missile = this.getWrapper(m) as MissileGameObject
+        this._health -= damage
+        this.healthCallback?.(this._health)
+        this.scene.removeMissile(missile)
         if (this._health <= 0) this.die()
       }
     })

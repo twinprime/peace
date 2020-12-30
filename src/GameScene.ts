@@ -16,12 +16,18 @@ import TreeGameObject from './static-objects/TreeGameObject'
 import VillageGameObject from './static-objects/VillageGameObject'
 import GameMap from './GameMap'
 import BunkerGameObject from './static-objects/BunkerGameObject'
+import { MissileGameObject } from './mobile-objects/MissileGameObject'
+import GameObject from './GameObject'
+import MissileLauncherGameObject from './mobile-objects/MissileLauncherGameObject'
+import MissileBaseGameObject from './static-objects/MissileBaseGameObject'
 
 export default class GameScene extends Phaser.Scene {
   private frameTime = 0
   private treeObjects: TreeGameObject[] = []
   private bulletObjects = new Map<Phaser.GameObjects.GameObject, BulletGameObject>()
   private bulletBodies = new Map<number, Phaser.Physics.Arcade.Group>()
+  private missileObjects = new Map<Phaser.GameObjects.GameObject, MissileGameObject>()
+  private missileBodies = new Map<number, Phaser.Physics.Arcade.Group>()
   private blueControl: BlueForceControl
   private redControl: RedForceControl
 
@@ -59,6 +65,7 @@ export default class GameScene extends Phaser.Scene {
     HomeBuildingGameObject.preload(this)
     VillageGameObject.preload(this)
     BulletGameObject.preload(this)
+    MissileGameObject.preload(this)
     ChopperGameObject.preload(this)
     AAGunGameObject.preload(this)
     SoldierGameObject.preload(this)
@@ -68,6 +75,8 @@ export default class GameScene extends Phaser.Scene {
     BarrackGameObject.preload(this)
     BunkerGameObject.preload(this)
     TankGameObject.preload(this)
+    MissileLauncherGameObject.preload(this)
+    MissileBaseGameObject.preload(this)
   }
 
   private createAnims(): void {
@@ -103,6 +112,8 @@ export default class GameScene extends Phaser.Scene {
 
     this.bulletBodies.set(-1, this.physics.add.group())
     this.bulletBodies.set(1, this.physics.add.group())
+    this.missileBodies.set(-1, this.physics.add.group())
+    this.missileBodies.set(1, this.physics.add.group())
 
     HelipadGameObject.createCommon(this)
     SoldierGameObject.createCommon(this)
@@ -114,6 +125,8 @@ export default class GameScene extends Phaser.Scene {
     this.cameras.main.startFollow(this.blueControl.chopper.sprite)
   }
 
+  getBulletBodies(owner: number): Phaser.Physics.Arcade.Group { return this.bulletBodies.get(owner) }
+
   createBullet(owner: number, duration: number, 
                x: number, y: number, velocityX: number, velocityY: number, 
                type: BulletType): BulletGameObject {
@@ -124,11 +137,26 @@ export default class GameScene extends Phaser.Scene {
     return bullet
   }
 
-  removeBullet(b: Phaser.GameObjects.GameObject): void {
-    this.bulletObjects.get(b)?.remove()
+  removeBullet(b: BulletGameObject): void {
+    this.bulletObjects.get(b.sprite)?.remove()
   }
 
-  getBulletBodies(owner: number): Phaser.Physics.Arcade.Group { return this.bulletBodies.get(owner) }
+  removeMissile(m: MissileGameObject): void {
+    m.die()
+  }
+
+  getMissileBodies(owner: number): Phaser.Physics.Arcade.Group { return this.missileBodies.get(owner) }
+
+  createMissile(owner: number,
+                duration: number, x: number, y: number, 
+                velocityX: number, velocityY: number,
+                maxAcceleration: number, target: GameObject): MissileGameObject {
+    const missile = new MissileGameObject(this, owner, this.missileBodies.get(owner), duration,
+      x, y, velocityX, velocityY, maxAcceleration, target)
+    this.missileObjects.set(missile.sprite, missile)
+    missile.destroyCallback = () => this.missileObjects.delete(missile.sprite)
+    return missile
+  }
   
   update(time: number, delta: number): void {
     this.frameTime += delta
@@ -139,6 +167,7 @@ export default class GameScene extends Phaser.Scene {
       this.redControl.update(time, delta)
       this.treeObjects.forEach(tree => tree.update())
       this.bulletObjects.forEach(bullet => bullet.update(time, delta))
+      this.missileObjects.forEach(m => m.update(time, delta))
     }
   }
 

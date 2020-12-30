@@ -34,7 +34,7 @@ export default class TreeGameObject extends PhysicsBodyGameObject {
 
   remove(): void { throw "TreeGameObject cannot be removed" }
 
-  protected setVisible(visible: boolean): void {
+  setVisible(visible: boolean): void {
     this.sprites.forEach(s => s.setVisible(visible))
   }
 

@@ -31,7 +31,7 @@ export default class SoldierGameObject extends HumanGameObject {
     this.behaviour = new ScanStopShootBehaviour(this, 2000, 2000, {
       findTarget() { return superThis.scene.gameMap.getObjectsFrom(
         superThis, superThis.owner * -1, 92, SoldierGameObject.scanRange,
-        (obj) => obj instanceof SoldierGameObject).size > 0 },
+        (obj) => obj instanceof SoldierGameObject) },
       isMoving() { return (superThis.sprite.body as Phaser.Physics.Arcade.Body).velocity.x != 0 },
       stop() { superThis.move(0, superThis.owner < 0) },
       move() { superThis.move(superThis.speed * superThis.owner, superThis.owner < 0) },

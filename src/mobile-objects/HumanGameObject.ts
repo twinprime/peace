@@ -53,7 +53,7 @@ export default class HumanGameObject extends PhysicsBodyGameObject {
     this.removed()
   }
 
-  protected setVisible(visible: boolean): void {
+  setVisible(visible: boolean): void {
     this.sprite.setVisible(visible)
   }
 

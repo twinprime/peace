@@ -5,6 +5,8 @@ import SoldierGameObject from "./mobile-objects/SoldierGameObject"
 import TankGameObject from "./mobile-objects/TankGameObject"
 import AAGunGameObject from "./static-objects/AAGunGameObject"
 import BunkerGameObject from "./static-objects/BunkerGameObject"
+import MissileLauncherGameObject from "./mobile-objects/MissileLauncherGameObject"
+import MissileBaseGameObject from "./static-objects/MissileBaseGameObject"
 
 export default abstract class ForceControl {
   protected abstract factory: FactoryGameObject
@@ -14,6 +16,8 @@ export default abstract class ForceControl {
   protected tankObjects = new Set<TankGameObject>()
   protected soliderObjects = new Set<SoldierGameObject>()
   protected aaGunObjects = new Set<AAGunGameObject>()
+  protected missileLauncherObjects = new Set<MissileLauncherGameObject>()
+  protected missileBaseObjects = new Set<MissileBaseGameObject>()
   protected bunkerObjects = new Set<BunkerGameObject>()
 
   constructor(protected readonly scene: GameScene, protected readonly owner: number) {}
@@ -21,6 +25,8 @@ export default abstract class ForceControl {
   update(time: number, delta: number): void {
     this.soliderObjects.forEach(soldier => soldier.update(time, delta))
     this.tankObjects.forEach(tank => tank.update(time, delta))
+    this.missileLauncherObjects.forEach(m => m.update(time, delta))
+    this.missileBaseObjects.forEach(m => m.update(time, delta))
     this.aaGunObjects.forEach(gun => gun.update(time, delta))
     this.bunkerObjects.forEach(b => b.update(time, delta))
   }
@@ -42,6 +48,29 @@ export default abstract class ForceControl {
     this.scene.gameMap.add(obj)
     obj.destroyCallback = () => {
       this.bunkerObjects.delete(obj)
+      this.scene.gameMap.remove(obj)
+    }
+  }
+
+  protected buildMissileLauncher(): void {
+    const obj = new MissileLauncherGameObject(this.scene, this.owner, this.factory.spawnX, 50)
+    obj.showHealthBar(50)
+    obj.move(50 * this.owner, this.owner < 0)
+    this.missileLauncherObjects.add(obj)
+    this.scene.gameMap.add(obj)
+    obj.destroyCallback = () => {
+      this.missileLauncherObjects.delete(obj)
+      this.scene.gameMap.remove(obj)
+    }
+  }
+
+  protected buildMissileBase(x: number, group: Phaser.Physics.Arcade.Group): void {
+    const obj = new MissileBaseGameObject(this.scene, this.owner, x, group)
+    obj.showHealthBar(50)
+    this.missileBaseObjects.add(obj)
+    this.scene.gameMap.add(obj)
+    obj.destroyCallback = () => {
+      this.missileBaseObjects.delete(obj)
       this.scene.gameMap.remove(obj)
     }
   }

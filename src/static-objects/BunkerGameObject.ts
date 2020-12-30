@@ -26,7 +26,7 @@ export default class BunkerGameObject extends SpriteGameObject {
     this.behaviour = new ScanStopShootBehaviour(this, 2000, 2000, {
       findTarget() { return superThis.scene.gameMap.getObjectsFrom(
         superThis, superThis.owner * -1, 16, BunkerGameObject.scanRange,
-        (obj) => obj.y2 > superThis.scene.groundPos - superThis.height).size > 0 },
+        (obj) => obj.y2 > superThis.scene.groundPos - superThis.height) },
       isMoving() { return (superThis.mainSprite.body as Phaser.Physics.Arcade.Body).velocity.x != 0 },
       stop() { /* do nothing */ },
       move() { /* do nothing */ },

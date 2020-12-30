@@ -76,6 +76,7 @@ export default class ChopperGameObject extends PhysicsBodyGameObject implements 
     this.healthCallback = healthCallback
 
     this.addBulletResponse(this.bodySprite, ChopperGameObject.bulletDamageMap)
+    this.addMissileResponse(this.bodySprite, 80)
 
     this.ropeObject = this.scene.add.rectangle(x, y, 1, 1, 0xFFFFFF)
     this.ropeObject.setDepth(5)
@@ -95,10 +96,11 @@ export default class ChopperGameObject extends PhysicsBodyGameObject implements 
   remove(): void {
     this.bodySprite.destroy()
     this.tailSprite.destroy()
+    this.scene.gameMap.remove(this)
     this.removed()
   }
 
-  protected setVisible(visible: boolean): void {
+  setVisible(visible: boolean): void {
     this.bodySprite.setVisible(visible)
     this.tailSprite.setVisible(visible)
   }

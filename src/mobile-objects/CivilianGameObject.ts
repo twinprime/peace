@@ -49,7 +49,7 @@ export default class CivilianGameObject extends HumanGameObject {
     if (this.state != CivilianState.GoingHome) {
       if ((time - this.lastLookForChopper) > CivilianGameObject.chopperLookInterval) {
         this.lastLookForChopper = time
-        if (!this.scene.chopper.onGround) {
+        if (!this.scene.chopper.onGround && !this.scene.chopper.dying) {
           const distSq = Phaser.Math.Distance.BetweenPointsSquared(body.position, this.scene.chopper.sprite)
           if (distSq <= CivilianGameObject.chopperWaveDistanceSq) {
             if (this.state != CivilianState.Wave &&
@@ -60,13 +60,15 @@ export default class CivilianGameObject extends HumanGameObject {
                     (time - this.lastStateChange) > CivilianGameObject.minStateDuration) {
             this.wander(time)
           }
-        } else {
+        } else if (!this.scene.chopper.dying) {
           const d = body.x - this.scene.chopper.sprite.x
           if (Math.abs(d)  <= CivilianGameObject.minBoardDistance) {
             this.lastStateChange = time
             this.state = CivilianState.Run
             this.move(CivilianGameObject.runSpeed * -Math.sign(d))
           }
+        } else if (this.state != CivilianState.Move) {
+          this.wander(time)
         }
       }
 

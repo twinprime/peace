@@ -12,6 +12,10 @@ export default class SpriteGameObject extends GameObject {
     this.halfHeight = s.height / 2
   }
 
+  get sprite(): Phaser.GameObjects.Sprite { return this._mainSprite }
+
+  get x(): number { return this._mainSprite.x }
+  get y(): number { return this._mainSprite.y }
   get x1(): number { return this._mainSprite.x - this.halfWidth }
   get x2(): number { return this._mainSprite.x + this.halfWidth }
   get y1(): number { return this._mainSprite.y - this.halfHeight }
@@ -22,6 +26,10 @@ export default class SpriteGameObject extends GameObject {
   moveTo(x: number, y: number): void {
     this.mainSprite.setX(x)
     this.mainSprite.setY(Math.min(this.scene.groundPos - this.halfHeight, y))
+  }
+
+  setVisible(visible: boolean): void {
+    this.mainSprite.setVisible(visible)
   }
 
   remove(): void {

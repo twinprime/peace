@@ -30,14 +30,18 @@ export default class RedForceControl extends ForceControl {
 
     this.barrack = new BarrackGameObject(scene, -1, nextPos - 32)
     nextPos -= 64 + 15
-    
+
     nextPos -= 100
     const gunBodies = scene.physics.add.group()
+    this.buildMissileBase(nextPos - 16, gunBodies)
+    nextPos -= 32 + 15
+    
+    nextPos -= 50
     this.buildAAGun(nextPos - 16, gunBodies)
     nextPos -= 32 + 15
 
     setTimeout(() => this.buildSoldier(), 2000)
-    setTimeout(() => this.buildTank(), 5000)
+    setTimeout(() => this.buildMissileLauncher(), 5000)
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

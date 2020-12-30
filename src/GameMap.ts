@@ -1,10 +1,12 @@
 import GameObject from "./GameObject"
+import ChopperGameObject from "./mobile-objects/ChopperGameObject"
 
 export default class GameMap {
   private static readonly updateInterval = 32
 
   private readonly cellCount: number
   private lastUpdate = 0
+  private allGameObjects = new Map<number, Set<GameObject>>()
   private gameObjects = new Map<number, Set<GameObject>[]>()
   private gameObjectCells = new Map<GameObject, number[]>()
   
@@ -18,6 +20,8 @@ export default class GameMap {
     }
     this.gameObjects.set(-1, redCells)
     this.gameObjects.set(1, blueCells)
+    this.allGameObjects.set(-1, new Set())
+    this.allGameObjects.set(1, new Set())
   }
 
   add(obj: GameObject): void {
@@ -26,6 +30,7 @@ export default class GameMap {
       const cells = [this.getCell(obj.x1), this.getCell(obj.x2)]
       for (let i = cells[0]; i <= cells[1]; i++) objs[i].add(obj)
       this.gameObjectCells.set(obj, cells)
+      this.allGameObjects.get(obj.owner).add(obj)
     }
   }
 
@@ -34,7 +39,26 @@ export default class GameMap {
     if (objs) {
       const cells = this.gameObjectCells.get(obj)
       for (let i = cells[0]; i <= cells[1]; i++) objs[i].delete(obj)
+      this.allGameObjects.get(obj.owner).delete(obj)
     }
+  }
+
+  findObject(owner: number, predicate: (obj: GameObject) => boolean): GameObject {
+    const objs = this.allGameObjects.get(owner).values()
+    let obj = objs.next()
+    while (!obj.done) {
+      if (predicate(obj.value)) return obj.value as GameObject
+      obj = objs.next()
+    }
+    return undefined
+  }
+
+  findChopper(subject: GameObject, distanceSq: number): ChopperGameObject {
+    return this.findObject(-subject.owner, (obj) => {
+      if (obj instanceof ChopperGameObject) {
+        return Phaser.Math.Distance.BetweenPointsSquared(subject, obj) < distanceSq
+      } else return false
+    }) as ChopperGameObject
   }
 
   getObjectsWithin(owner: number, x1: number, x2: number, 

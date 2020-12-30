@@ -1,19 +1,16 @@
 import GameScene from "../GameScene"
-import PhysicsBodyGameObject from "../PhysicsBodyGameObject"
+import SpriteGameObject from "../SpriteGameObject"
 
 export enum BulletType {
   Chopper, AA, Bunker, Tank, Rifle
 }
 
-export class BulletGameObject extends PhysicsBodyGameObject {
+export class BulletGameObject extends SpriteGameObject {
   private static typeToScale = new Map<BulletType, number>([
     [BulletType.Chopper, 0.75], [BulletType.AA, 1], [BulletType.Bunker, 1.5], 
     [BulletType.Tank, 1.5], [BulletType.Rifle, 0.5]])
 
-  private readonly _sprite: Phaser.GameObjects.Sprite
   private startTime = 0
-
-  get sprite(): Phaser.GameObjects.Sprite { return this._sprite }
 
   constructor(scene: GameScene, owner: number, 
               readonly physicsGroup: Phaser.Physics.Arcade.Group,
@@ -22,23 +19,15 @@ export class BulletGameObject extends PhysicsBodyGameObject {
               velocityX: number, velocityY: number,
               readonly bulletType: BulletType) {
     super(scene, owner)
-    this._sprite = this.scene.add.sprite(x, y, this.owner > 0 ? "bullet-blue" : "bullet-red")
-    this._sprite.setDepth(200)
-    this.addWrapperProperty(this._sprite)
+    this.mainSprite = this.scene.add.sprite(x, y, this.owner > 0 ? "bullet-blue" : "bullet-red")
+    this.mainSprite.setDepth(200)
+    this.addWrapperProperty(this.mainSprite)
     const scale = BulletGameObject.typeToScale.get(bulletType)
-    this._sprite.setScale(scale, scale)
-    this.physicsGroup.add(this._sprite)
-    const body = this._sprite.body as Phaser.Physics.Arcade.Body
+    this.mainSprite.setScale(scale, scale)
+    this.physicsGroup.add(this.mainSprite)
+    const body = this.mainSprite.body as Phaser.Physics.Arcade.Body
     body.setAllowGravity(false)
     body.setVelocity(velocityX, velocityY)
-    body.mass = 0.01
-
-    this.mainBody = body
-  }
-
-  remove(): void {
-    this._sprite.destroy()
-    this.removed()
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -47,13 +36,9 @@ export class BulletGameObject extends PhysicsBodyGameObject {
     if (this.startTime == 0) this.startTime = time
     else if ((time - this.startTime) > this.duration) this.remove()
     else {
-      if (this._sprite.x < 0 || this._sprite.x > this.scene.worldWidth || 
-        this._sprite.y < 0 || this._sprite.y > this.scene.worldHeight) this.remove()
+      if (this.mainSprite.x < 0 || this.mainSprite.x > this.scene.worldWidth || 
+        this.mainSprite.y < 0 || this.mainSprite.y > this.scene.worldHeight) this.remove()
     }
-  }
-
-  protected setVisible(visible: boolean): void {
-    this._sprite.setVisible(visible)
   }
 
   static preload(scene: GameScene): void {

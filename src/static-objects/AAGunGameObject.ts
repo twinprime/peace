@@ -53,7 +53,7 @@ export default class AAGunGameObject extends PhysicsBodyGameObject {
     this.removed()
   }
 
-  protected setVisible(visible: boolean): void {
+  setVisible(visible: boolean): void {
     this.gunSprite.setVisible(visible)
     this.bodySprite.setVisible(visible)
   }
@@ -62,19 +62,17 @@ export default class AAGunGameObject extends PhysicsBodyGameObject {
   update(time: number, delta: number): void {
     super.update(time, delta)
     
-    if (this.faceLeft) {
-      this.angle = Phaser.Math.Angle.BetweenPoints(this.scene.chopper.sprite, this.gunSprite)
-      const distSq = Phaser.Math.Distance.BetweenPointsSquared(this.gunSprite, this.scene.chopper.sprite)
-      if (distSq < AAGunGameObject.chopperTrackDistanceSq) {
-        if ((time - this.lastFired) > 1000) {
-          this.lastFired = time
-          const dir = new Phaser.Math.Vector2(
-            this.scene.chopper.sprite.x - this.gunSprite.x,
-            this.scene.chopper.sprite.y - this.gunSprite.y).normalize()
-          this.scene.createBullet(this.owner, 30000, this.gunSprite.x + dir.x * 16, 
-            this.gunSprite.y + dir.y * 16,
-            dir.x * 100, dir.y * 100, BulletType.AA)
-        }
+    if (this.faceLeft && (time - this.lastFired > 500)) {
+      const target = this.scene.gameMap.findChopper(this, AAGunGameObject.chopperTrackDistanceSq)
+      if (target) {
+        this.lastFired = time
+        this.angle = Phaser.Math.Angle.BetweenPoints(target, this.gunSprite)
+        const dir = new Phaser.Math.Vector2(
+          target.x - this.gunSprite.x,
+          target.y - this.gunSprite.y).normalize()
+        this.scene.createBullet(this.owner, 30000, this.gunSprite.x + dir.x * 16, 
+          this.gunSprite.y + dir.y * 16,
+          dir.x * 200, dir.y * 200, BulletType.AA)
       }
     }
   }

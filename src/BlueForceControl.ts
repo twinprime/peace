@@ -62,8 +62,12 @@ export default class BlueForceControl extends ForceControl {
     nextPos += 64 + 15
 
     this.liftableBodies = this.scene.physics.add.group()
-    
+
     nextPos += 100
+    this.buildMissileBase(nextPos + 16, this.liftableBodies)
+    nextPos += 32 + 15
+    
+    nextPos += 50
     this.buildAAGun(nextPos + 16, this.liftableBodies)
     nextPos += 32 + 15
 
