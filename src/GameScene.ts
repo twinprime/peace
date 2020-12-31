@@ -47,8 +47,7 @@ export default class GameScene extends Phaser.Scene {
   constructor(readonly worldWidth: number, readonly worldHeight: number) {
     super({
       active: false,
-      visible: false,
-      key: 'Game',
+      visible: false
     })
     this.gameMap = new GameMap(worldWidth, 100)
   }

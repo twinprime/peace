@@ -11,13 +11,33 @@ import HomeBuildingGameObject from "./static-objects/HomeBuildingGameObject"
 import SoldierGameObject from "./mobile-objects/SoldierGameObject"
 import TankGameObject from "./mobile-objects/TankGameObject"
 import VillageGameObject from "./static-objects/VillageGameObject"
+import BunkerGameObject from "./static-objects/BunkerGameObject"
 
 export default class BlueForceControl extends ForceControl {
-  private cash = 1000
+  private _cash = 1000
+  get cash(): number { return this._cash }
   private cashDelta = 100
   private cashUpdateInterval = 5000
   private lastCashUpdate = 0
   private cashText: Phaser.GameObjects.Text
+
+  private lastProduction = 0
+  private minProductionInterval = 3000
+  private productionEnabled = true
+  private ProductionButton = class extends GameButton {
+    constructor(control: BlueForceControl, readonly cost: number, 
+                icon: Phaser.GameObjects.Sprite, onClick: () => void) {
+      super(control.scene, icon, () => {
+        if (control._cash >= cost) {
+          control.adjustCash(-cost)
+          control.lastProduction = control.scene.sys.game.getTime()
+          control.enableProduction(false)
+          onClick()
+        }
+      })
+    }
+  }
+  private productionButtons: GameButton[] = []
 
   private liftableBodies: Phaser.Physics.Arcade.Group
   private villages = new Set<VillageGameObject>()
@@ -36,14 +56,13 @@ export default class BlueForceControl extends ForceControl {
 
     const screenWidth = scene.sys.scale.gameSize.width
 
-    new GameButton(scene, SoldierGameObject.createIcon(scene, screenWidth - 32, 32), () => {
-      this.adjustCash(-10)
-      this.buildSoldier()
-    })
-    new GameButton(scene, TankGameObject.createIcon(scene, screenWidth - 32, 69), () => {
-      this.adjustCash(-500)
-      this.buildTank()
-    })
+    this.productionButtons.push(new this.ProductionButton(this, 10, 
+      SoldierGameObject.createIcon(scene, screenWidth - 32, 32), () => this.buildSoldier()))
+    this.productionButtons.push(new this.ProductionButton(this, 500, 
+      TankGameObject.createIcon(scene, screenWidth - 32, 69), () => this.buildTank()))
+    this.productionButtons.push(new this.ProductionButton(this, 500, 
+      BunkerGameObject.createIcon(scene, screenWidth- 32, 106), 
+      () => this.buildBunker(this.factory.spawnX, this.liftableBodies)))
 
     this.boardableBodies = scene.physics.add.group()
 
@@ -96,7 +115,7 @@ export default class BlueForceControl extends ForceControl {
     const soldierOnBoardCountText = scene.add.text(onBoardCountX, 10, "0")
     soldierOnBoardCountText.setScrollFactor(0, 0)
 
-    this.cashText = scene.add.text(10, healthBar.height + 20, `$${this.cash} +$${this.cashDelta}`)
+    this.cashText = scene.add.text(10, healthBar.height + 20, `$${this._cash} +$${this.cashDelta}`)
     this.cashText.setScrollFactor(0, 0)
 
     this._chopper = new ChopperGameObject(scene, 1, helipad, this.liftableBodies, 
@@ -117,12 +136,31 @@ export default class BlueForceControl extends ForceControl {
       this.adjustCash(this.cashDelta)
       this.lastCashUpdate = time
     }
+
+    if (!this.productionEnabled && 
+        (time - this.lastProduction) >= this.minProductionInterval) {
+      this.enableProduction(true)
+    }
+
     super.update(time, delta)
   }
 
-  private adjustCash(amt: number) {
-    this.cash += amt
-    this.cashText.setText(`$${this.cash} +$${this.cashDelta}`)
+  private enableProduction(enable: boolean) {
+    this.productionEnabled = enable
+    this.productionButtons.forEach(b => {
+      if (enable) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
+        const cost = (b as any).cost as number
+        if (b.enabled && cost > this._cash) b.enabled = false
+        else if (!b.enabled && cost <= this._cash) b.enabled = true
+      } else b.enabled = false
+    })
+  }
+
+  private adjustCash(amt: number): void {
+    this._cash += amt
+    this.cashText.setText(`$${this._cash} +$${this.cashDelta}`)
+    if (this.productionEnabled) this.enableProduction(true)
   }
 
   private buildVillage(x: number, homePos: number) {

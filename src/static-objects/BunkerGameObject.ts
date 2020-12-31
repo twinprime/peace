@@ -43,4 +43,10 @@ export default class BunkerGameObject extends SpriteGameObject {
   static preload(scene: GameScene): void {
     scene.load.image("bunker", "/images/bunker.png")
   }
+
+  static createIcon(scene: GameScene, x: number, y: number): Phaser.GameObjects.Sprite {
+    const icon = scene.add.sprite(x, y, "bunker")
+    // icon.setScale(0.35, 0.35)
+    return icon
+  }
 }
